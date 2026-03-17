@@ -71,7 +71,23 @@ export default function ThresholdsSettings() {
     setDirty(false);
   };
 
-  if (loading) return <div className="text-text-secondary">Loading...</div>;
+  if (loading) return (
+    <div>
+      <div className="h-7 w-44 bg-bg-card rounded animate-pulse mb-2" />
+      <div className="h-4 w-64 bg-bg-card rounded animate-pulse mb-6" />
+      {[...Array(2)].map((_, i) => (
+        <div key={i} className="mb-6">
+          <div className="h-4 w-24 bg-bg-card rounded animate-pulse mb-2" />
+          <div className="border border-border-subtle rounded-lg overflow-hidden">
+            <div className="h-9 bg-bg-surface/50 border-b border-border-subtle animate-pulse" />
+            {[...Array(3)].map((_, j) => (
+              <div key={j} className="h-11 border-b border-border-subtle last:border-b-0 bg-bg-surface animate-pulse" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   // Group by server
   const servers = new Map<string, Threshold[]>();
@@ -85,13 +101,13 @@ export default function ThresholdsSettings() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-[22px] font-semibold tracking-tight">Alert Thresholds</h2>
-          <p className="text-xs text-text-tertiary font-mono font-light mt-0.5">
+          <h2 className="text-2xl font-semibold tracking-tight">Alert Thresholds</h2>
+          <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
             Configure warning and critical levels per server
           </p>
         </div>
         {dirty && (
-          <button onClick={save} disabled={saving} className="px-3 py-1.5 text-xs rounded-md bg-accent text-bg-deep font-medium hover:bg-accent/90 disabled:opacity-40 transition-colors">
+          <button onClick={save} disabled={saving} className="px-3 py-1.5 text-sm rounded-lg bg-accent text-bg-deep font-medium hover:bg-accent/90 disabled:opacity-40 transition-colors active:scale-[0.97]">
             {saving ? "Saving..." : "Save Changes"}
           </button>
         )}
@@ -103,26 +119,26 @@ export default function ThresholdsSettings() {
           <div className="border border-border-subtle rounded-lg overflow-hidden">
             {/* Header */}
             <div className="grid grid-cols-[1fr_120px_120px] gap-3 px-3 py-2 bg-bg-surface/50 border-b border-border-subtle">
-              <span className="text-[11px] text-text-tertiary uppercase tracking-wider">Metric</span>
-              <span className="text-[11px] text-text-tertiary uppercase tracking-wider">Warning %</span>
-              <span className="text-[11px] text-text-tertiary uppercase tracking-wider">Critical %</span>
+              <span className="text-xs text-text-tertiary uppercase tracking-wider">Metric</span>
+              <span className="text-xs text-text-tertiary uppercase tracking-wider">Warning %</span>
+              <span className="text-xs text-text-tertiary uppercase tracking-wider">Critical %</span>
             </div>
             {serverThresholds.map((t) => {
               const edit = getEdit(t.server, t.metric);
               return (
                 <div key={t.metric} className="grid grid-cols-[1fr_120px_120px] gap-3 px-3 py-2.5 border-b border-border-subtle last:border-b-0 items-center">
-                  <span className="text-[13px] text-text-primary">{METRIC_LABELS[t.metric] || t.metric}</span>
+                  <span className="text-sm text-text-primary">{METRIC_LABELS[t.metric] || t.metric}</span>
                   <input
                     type="number"
                     value={edit.warning}
                     onChange={(e) => updateEdit(t.server, t.metric, "warning", parseFloat(e.target.value) || 0)}
-                    className="bg-bg-deep border border-border rounded-md px-2 py-1 text-xs text-amber-400 font-mono focus:outline-none focus:border-accent w-full"
+                    className="bg-bg-surface border border-transparent rounded-lg px-2 py-1 focus:border-accent text-xs text-amber-400 font-mono focus:outline-none focus:border-accent w-full"
                   />
                   <input
                     type="number"
                     value={edit.critical}
                     onChange={(e) => updateEdit(t.server, t.metric, "critical", parseFloat(e.target.value) || 0)}
-                    className="bg-bg-deep border border-border rounded-md px-2 py-1 text-xs text-red font-mono focus:outline-none focus:border-accent w-full"
+                    className="bg-bg-surface border border-transparent rounded-lg px-2 py-1 focus:border-accent text-xs text-red font-mono focus:outline-none focus:border-accent w-full"
                   />
                 </div>
               );

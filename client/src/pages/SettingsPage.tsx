@@ -20,14 +20,14 @@ export default function SettingsPage() {
     <div className="flex h-full">
       {/* Settings nav sidebar */}
       <div className="w-[200px] min-w-[200px] border-r border-border-subtle bg-bg-base p-3 flex flex-col gap-0.5">
-        <div className="text-[10px] uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-2 pb-2">
+        <div className="text-xs uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-2 pb-2">
           Settings
         </div>
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`text-left px-3 py-2 rounded-md text-[13.5px] transition-all relative ${
+            className={`text-left px-3 py-2 rounded-lg text-sm transition-all relative ${
               activeTab === tab.id
                 ? "bg-accent-glow text-accent font-medium"
                 : "text-text-secondary hover:bg-bg-surface hover:text-text-primary"

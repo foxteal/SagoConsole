@@ -39,13 +39,24 @@ export default function ServicesPage() {
   return (
     <div className="p-6 pb-10">
       <div className="mb-6">
-        <h1 className="text-[22px] font-semibold tracking-tight">Services</h1>
-        <p className="text-xs text-text-tertiary font-mono font-light mt-0.5">
+        <h1 className="text-2xl font-semibold tracking-tight">Services</h1>
+        <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
           {totalLinks} services across {categories.length} categories
         </p>
       </div>
       {loading ? (
-        <div className="text-text-secondary">Loading services...</div>
+        <div className="space-y-6">
+          {[...Array(3)].map((_, i) => (
+            <div key={i}>
+              <div className="h-4 w-32 bg-bg-card rounded animate-pulse mb-2.5" />
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-2">
+                {[...Array(4)].map((_, j) => (
+                  <div key={j} className="h-14 bg-bg-surface border border-border-subtle rounded-md animate-pulse" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <ServiceLinks categories={categories} />
       )}

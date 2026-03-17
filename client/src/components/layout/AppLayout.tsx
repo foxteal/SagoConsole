@@ -21,7 +21,9 @@ export default function AppLayout() {
     <div className="flex h-screen">
       <Sidebar />
       <main className="flex-1 overflow-y-auto bg-bg-deep">
-        <Outlet />
+        <div className="max-w-[1400px]">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

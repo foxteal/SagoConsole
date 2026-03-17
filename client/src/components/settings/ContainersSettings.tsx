@@ -105,7 +105,22 @@ export default function ContainersSettings() {
     fetchData();
   };
 
-  if (loading) return <div className="text-text-secondary">Loading...</div>;
+  if (loading) return (
+    <div>
+      <div className="h-7 w-36 bg-bg-card rounded animate-pulse mb-2" />
+      <div className="h-4 w-56 bg-bg-card rounded animate-pulse mb-6" />
+      {[...Array(2)].map((_, i) => (
+        <div key={i} className="mb-6">
+          <div className="h-4 w-24 bg-bg-card rounded animate-pulse mb-2" />
+          <div className="border border-border-subtle rounded-lg overflow-hidden">
+            {[...Array(4)].map((_, j) => (
+              <div key={j} className="h-12 border-b border-border-subtle last:border-b-0 bg-bg-surface animate-pulse" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   // Build a full project list from raw container data (ignoring prefs filtering)
   // We need all projects including hidden ones for the settings UI
@@ -113,13 +128,13 @@ export default function ContainersSettings() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-[22px] font-semibold tracking-tight">Containers</h2>
-          <p className="text-xs text-text-tertiary font-mono font-light mt-0.5">
+          <h2 className="text-2xl font-semibold tracking-tight">Containers</h2>
+          <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
             Hide containers, rename project groups
           </p>
         </div>
         {dirty && (
-          <button onClick={save} disabled={saving} className="px-3 py-1.5 text-xs rounded-md bg-accent text-bg-deep font-medium hover:bg-accent/90 disabled:opacity-40 transition-colors">
+          <button onClick={save} disabled={saving} className="px-3 py-1.5 text-sm rounded-lg bg-accent text-bg-deep font-medium hover:bg-accent/90 disabled:opacity-40 transition-colors active:scale-[0.97]">
             {saving ? "Saving..." : "Save Changes"}
           </button>
         )}
@@ -129,7 +144,7 @@ export default function ContainersSettings() {
         <div key={server.server} className="mb-6">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-sm font-medium text-text-primary">{server.server}</h3>
-            <span className="text-[10px] text-text-tertiary font-mono">{server.projects.length} projects</span>
+            <span className="text-xs text-text-tertiary font-mono">{server.projects.length} projects</span>
           </div>
           <div className="border border-border-subtle rounded-lg overflow-hidden">
             {server.projects.map((project) => {
@@ -159,8 +174,8 @@ export default function ContainersSettings() {
                   </button>
                   {/* Project name */}
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] text-text-primary font-mono">{project.name}</div>
-                    <div className="text-[11px] text-text-tertiary">
+                    <div className="text-sm text-text-primary font-mono">{project.name}</div>
+                    <div className="text-[13px] text-text-tertiary font-light">
                       {project.containers.length} container{project.containers.length !== 1 ? "s" : ""}
                     </div>
                   </div>
@@ -169,7 +184,7 @@ export default function ContainersSettings() {
                     value={edit.display_name}
                     onChange={(e) => updateEdit(server.server, project.name, "display_name", e.target.value)}
                     placeholder="Display name"
-                    className="w-40 bg-bg-deep border border-border rounded-md px-2 py-1 text-xs text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-accent"
+                    className="w-40 bg-bg-surface border border-transparent rounded-lg px-2 py-1 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
               );

@@ -70,7 +70,7 @@ function BadgeCell({ value, badgeMap }: { value: string; badgeMap?: Record<strin
   const colorKey = badgeMap?.[value] || "text-secondary";
   const cls = colorMap[colorKey] || colorMap["text-secondary"];
   return (
-    <span className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-lg ${cls}`}>
+    <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded-lg ${cls}`}>
       {value}
     </span>
   );
@@ -85,7 +85,7 @@ function ProgressCell({ value }: { value: number }) {
           style={{ width: `${Math.min(value, 100)}%` }}
         />
       </div>
-      <span className="text-[10px] font-mono text-text-tertiary w-8 text-right">{value}%</span>
+      <span className="text-xs font-mono text-text-tertiary w-8 text-right">{value}%</span>
     </div>
   );
 }
@@ -97,11 +97,11 @@ function CellValue({ col, value }: { col: ColumnDef; value: unknown }) {
     case "progress":
       return <ProgressCell value={Number(value) || 0} />;
     case "filesize":
-      return <span className="font-mono text-[11px]">{formatFileSize(value)}</span>;
+      return <span className="font-mono text-[13px] font-light">{formatFileSize(value)}</span>;
     case "timestamp":
-      return <span className="font-mono text-[11px]">{timeAgo(value)}</span>;
+      return <span className="font-mono text-[13px] font-light">{timeAgo(value)}</span>;
     default:
-      return <span className="text-xs">{String(value ?? "")}</span>;
+      return <span className="text-sm font-light">{String(value ?? "")}</span>;
   }
 }
 
@@ -115,7 +115,7 @@ export default function GenericScreen() {
   const [rows, setRows] = useState<ScreenRow[]>([]);
   const [summary, setSummary] = useState<Record<string, string | number>>({});
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<{ message: string; ok: boolean } | null>(null);
+  const [feedback, setFeedback] = useState<{ actionId: string; rowId?: string; message: string; ok: boolean } | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -160,12 +160,12 @@ export default function GenericScreen() {
     }
   }, [config, fetchData]);
 
-  // Toast auto-dismiss
+  // Auto-dismiss inline feedback
   useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 3000);
+    if (!feedback) return;
+    const t = setTimeout(() => setFeedback(null), 4000);
     return () => clearTimeout(t);
-  }, [toast]);
+  }, [feedback]);
 
   const executeAction = async (action: ActionDef, rowId?: string) => {
     if (action.confirm && !window.confirm(`Are you sure you want to ${action.label.toLowerCase()}?`)) {
@@ -178,10 +178,10 @@ export default function GenericScreen() {
         : `/api/proxy/${slug}/action/${action.id}`;
       const res = await apiClient(url, { method: "POST" });
       const data = await res.json();
-      setToast({ message: data.message || (data.ok ? "Done" : "Failed"), ok: data.ok });
+      setFeedback({ actionId: action.id, rowId, message: data.message || (data.ok ? "Done" : "Failed"), ok: data.ok });
       if (data.ok) fetchData();
     } catch {
-      setToast({ message: "Action failed", ok: false });
+      setFeedback({ actionId: action.id, rowId, message: "Action failed", ok: false });
     }
   };
 
@@ -212,43 +212,36 @@ export default function GenericScreen() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-tight">{config.name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{config.name}</h1>
           {config.summaryTemplate && (
-            <p className="text-xs text-text-tertiary font-mono font-light mt-0.5">
+            <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
               {renderSummary(config.summaryTemplate, summary)}
             </p>
           )}
         </div>
       </div>
 
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`mb-4 px-3 py-2 rounded-lg text-sm border ${
-            toast.ok
-              ? "bg-green-dim border-green/20 text-green"
-              : "bg-red-dim border-red/20 text-red"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
-
       {/* Global actions */}
       {config.globalActions.length > 0 && (
-        <div className="flex gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-4">
           {config.globalActions.map((action) => (
-            <button
-              key={action.id}
-              onClick={() => executeAction(action)}
-              className="px-3 py-1.5 rounded-lg text-[11px] font-medium bg-bg-surface border border-border-subtle text-text-secondary hover:border-border hover:text-text-primary transition-all active:scale-[0.97]"
-            >
-              {action.label}
-            </button>
+            <div key={action.id} className="flex items-center gap-1.5">
+              <button
+                onClick={() => executeAction(action)}
+                className="px-3 py-1.5 rounded-lg text-[13px] font-medium bg-bg-surface border border-border-subtle text-text-secondary hover:border-border hover:text-text-primary transition-all active:scale-[0.97]"
+              >
+                {action.label}
+              </button>
+              {feedback && feedback.actionId === action.id && !feedback.rowId && (
+                <span className={`text-xs font-mono ${feedback.ok ? "text-green" : "text-red"}`}>
+                  {feedback.message}
+                </span>
+              )}
+            </div>
           ))}
           <button
             onClick={fetchData}
-            className="px-3 py-1.5 rounded-lg text-[11px] font-medium bg-bg-surface border border-border-subtle text-text-secondary hover:border-border hover:text-text-primary transition-all active:scale-[0.97]"
+            className="px-3 py-1.5 rounded-lg text-[13px] font-medium bg-bg-surface border border-border-subtle text-text-secondary hover:border-border hover:text-text-primary transition-all active:scale-[0.97]"
           >
             Refresh
           </button>
@@ -260,7 +253,7 @@ export default function GenericScreen() {
         <div className="flex gap-1.5 mb-4">
           <button
             onClick={() => setStatusFilter("all")}
-            className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-all ${
+            className={`px-3 py-1 rounded-lg text-[13px] font-medium border transition-all active:scale-[0.97] ${
               statusFilter === "all"
                 ? "bg-accent-glow border-accent-dim text-accent"
                 : "bg-bg-surface border-border-subtle text-text-secondary hover:border-border hover:text-text-primary"
@@ -274,7 +267,7 @@ export default function GenericScreen() {
               <button
                 key={val}
                 onClick={() => setStatusFilter(val)}
-                className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-all ${
+                className={`px-3 py-1 rounded-lg text-[13px] font-medium border transition-all active:scale-[0.97] ${
                   statusFilter === val
                     ? "bg-accent-glow border-accent-dim text-accent"
                     : "bg-bg-surface border-border-subtle text-text-secondary hover:border-border hover:text-text-primary"
@@ -303,13 +296,13 @@ export default function GenericScreen() {
                 {config.columns.map((col) => (
                   <th
                     key={col.key}
-                    className="text-left px-3 py-2 text-[10px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle"
+                    className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle"
                   >
                     {col.label}
                   </th>
                 ))}
                 {config.rowActions.length > 0 && (
-                  <th className="text-right px-3 py-2 text-[10px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle w-[1%]">
+                  <th className="text-right px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle w-[1%]">
                     Actions
                   </th>
                 )}
@@ -317,19 +310,27 @@ export default function GenericScreen() {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td
-                    colSpan={config.columns.length + (config.rowActions.length > 0 ? 1 : 0)}
-                    className="px-3 py-6 text-center text-[11px] text-text-tertiary font-mono"
-                  >
-                    Loading...
-                  </td>
-                </tr>
+                <>
+                  {[...Array(5)].map((_, i) => (
+                    <tr key={i}>
+                      {config.columns.map((col) => (
+                        <td key={col.key} className="px-3 py-3 border-b border-border-subtle">
+                          <div className="h-4 bg-bg-card rounded animate-pulse" />
+                        </td>
+                      ))}
+                      {config.rowActions.length > 0 && (
+                        <td className="px-3 py-3 border-b border-border-subtle">
+                          <div className="h-4 w-16 bg-bg-card rounded animate-pulse ml-auto" />
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </>
               ) : filteredRows.length === 0 ? (
                 <tr>
                   <td
                     colSpan={config.columns.length + (config.rowActions.length > 0 ? 1 : 0)}
-                    className="px-3 py-6 text-center text-[11px] text-text-tertiary font-mono"
+                    className="px-3 py-6 text-center text-[13px] text-text-tertiary font-mono"
                   >
                     No data
                   </td>
@@ -347,12 +348,17 @@ export default function GenericScreen() {
                     ))}
                     {config.rowActions.length > 0 && (
                       <td className="px-3 py-2.5 border-b border-border-subtle text-right whitespace-nowrap">
-                        <div className="flex gap-1 justify-end">
+                        <div className="flex gap-1 items-center justify-end">
+                          {feedback && feedback.rowId === row.id && (
+                            <span className={`text-xs font-mono mr-1 ${feedback.ok ? "text-green" : "text-red"}`}>
+                              {feedback.message}
+                            </span>
+                          )}
                           {config.rowActions.map((action) => (
                             <button
                               key={action.id}
                               onClick={() => executeAction(action, row.id)}
-                              className="px-2 py-0.5 rounded text-[10px] font-medium bg-bg-card border border-border-subtle text-text-tertiary hover:text-text-primary hover:border-border transition-all"
+                              className="px-2 py-0.5 rounded-lg text-xs font-medium bg-bg-card border border-border-subtle text-text-tertiary hover:text-text-primary hover:border-border transition-all active:scale-[0.97]"
                             >
                               {action.label}
                             </button>

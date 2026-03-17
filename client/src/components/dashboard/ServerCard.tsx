@@ -50,7 +50,7 @@ export default function ServerCard({ server }: { server: ServerData }) {
           />
           {server.name}
         </div>
-        <div className="font-mono text-[11px] text-text-tertiary font-light">
+        <div className="font-mono text-[13px] text-text-tertiary font-light">
           {server.uptimeSeconds !== null ? formatUptime(server.uptimeSeconds) : "—"}
         </div>
       </div>
@@ -62,10 +62,10 @@ export default function ServerCard({ server }: { server: ServerData }) {
       {/* Temp & Network */}
       <hr className="border-0 border-t border-border-subtle my-2" />
       <div className="flex justify-between py-1">
-        <div className="font-mono text-[11px] text-text-tertiary flex items-center gap-1">
+        <div className="font-mono text-[13px] text-text-tertiary font-light flex items-center gap-1">
           &#9832; <span className="text-text-secondary">{server.tempCelsius !== null ? `${server.tempCelsius}\u00B0C` : "—"}</span>
         </div>
-        <div className="font-mono text-[11px] text-text-tertiary flex items-center gap-1">
+        <div className="font-mono text-[13px] text-text-tertiary font-light flex items-center gap-1">
           &#8593;<span className="text-text-secondary">{server.networkTxBytesPerSec !== null ? formatNetRate(server.networkTxBytesPerSec) : "—"}</span>
           {" "}&#8595;<span className="text-text-secondary">{server.networkRxBytesPerSec !== null ? formatNetRate(server.networkRxBytesPerSec) : "—"}</span>
         </div>

@@ -98,8 +98,8 @@ export default function DashboardPage() {
     <div className="p-6 pb-10">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-xs text-text-tertiary font-mono font-light mt-0.5">
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
             {lastUpdated ? `last updated ${secondsAgo}s ago` : "loading..."}
           </p>
         </div>
@@ -109,10 +109,24 @@ export default function DashboardPage() {
           {error}
         </div>
       )}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        {servers.map((server) => (
-          <ServerCard key={server.instance} server={server} />
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+        {servers.length === 0 && !error ? (
+          <>
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-bg-surface border border-border-subtle rounded-lg px-[18px] py-4">
+                <div className="h-5 w-24 bg-bg-card rounded animate-pulse mb-3.5" />
+                <div className="h-3 w-full bg-bg-card rounded animate-pulse mb-2" />
+                <div className="h-3 w-full bg-bg-card rounded animate-pulse mb-2" />
+                <div className="h-px bg-border-subtle my-2" />
+                <div className="h-3 w-3/4 bg-bg-card rounded animate-pulse" />
+              </div>
+            ))}
+          </>
+        ) : (
+          servers.map((server) => (
+            <ServerCard key={server.instance} server={server} />
+          ))
+        )}
       </div>
       <div className="grid grid-cols-[1fr_340px] gap-4 max-[900px]:grid-cols-1">
         {containerServers.length > 0 && <ContainerGrid servers={containerServers} />}

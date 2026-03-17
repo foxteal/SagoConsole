@@ -49,21 +49,21 @@ export default function AlertsWidget() {
   return (
     <div className="bg-bg-surface border border-border-subtle rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-medium uppercase tracking-[1px] text-text-tertiary">
+        <span className="text-xs font-medium uppercase tracking-[1px] text-text-tertiary">
           Recent Alerts
         </span>
         <Link
           to="/alerts"
-          className="text-[11px] text-accent-dim font-medium hover:text-accent transition-colors"
+          className="text-[13px] text-accent-dim font-medium hover:text-accent transition-colors"
         >
           View all &rarr;
         </Link>
       </div>
 
       {loading ? (
-        <p className="text-[11px] text-text-tertiary font-mono">Loading alerts...</p>
+        <p className="text-[13px] text-text-tertiary font-mono font-light">Loading alerts...</p>
       ) : alerts.length === 0 ? (
-        <p className="text-[11px] text-text-tertiary font-mono">No alerts</p>
+        <p className="text-[13px] text-text-tertiary font-mono font-light">No alerts</p>
       ) : (
         <div className="flex flex-col gap-1.5">
           {alerts.map((alert) => (
@@ -79,16 +79,16 @@ export default function AlertsWidget() {
                       : "bg-amber shadow-[0_0_4px_rgba(251,191,36,0.3)]"
                   }`}
                 />
-                <span className="text-[11px] text-text-primary truncate">
+                <span className="text-[13px] text-text-primary truncate">
                   {alert.message}
                 </span>
                 {alert.resolved_at && (
-                  <span className="text-[9px] text-text-tertiary bg-bg-surface px-1.5 py-px rounded font-mono ml-1 shrink-0">
+                  <span className="text-xs text-text-tertiary bg-bg-surface px-1.5 py-px rounded font-mono ml-1 shrink-0">
                     resolved
                   </span>
                 )}
               </div>
-              <span className="text-[10px] text-text-tertiary font-mono font-light ml-3">
+              <span className="text-xs text-text-tertiary font-mono font-light ml-3">
                 {timeAgo(alert.fired_at)}
               </span>
             </div>

@@ -53,7 +53,7 @@ function NavItem({
       to={to}
       end={end}
       className={({ isActive }) =>
-        `flex items-center gap-2.5 px-3 py-2 rounded-md text-[13.5px] transition-all relative ${
+        `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all relative ${
           isActive
             ? "bg-accent-glow text-accent font-medium"
             : "text-text-secondary hover:bg-bg-surface hover:text-text-primary"
@@ -68,7 +68,7 @@ function NavItem({
           <NavIcon icon={icon} />
           {label}
           {badge != null && badge > 0 && (
-            <span className="ml-auto bg-red-dim text-red text-[10px] font-semibold font-mono px-1.5 py-px rounded-lg">
+            <span className="ml-auto bg-red-dim text-red text-xs font-semibold font-mono px-1.5 py-px rounded-lg">
               {badge}
             </span>
           )}
@@ -119,13 +119,13 @@ export default function Sidebar() {
         </div>
         <div>
           <div className="font-semibold text-[15px] tracking-wide text-text-primary">SagoConsole</div>
-          <div className="text-[10px] text-text-tertiary tracking-[1.5px] uppercase mt-px">homelab</div>
+          <div className="text-xs text-text-tertiary tracking-[1.5px] uppercase mt-px">homelab</div>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-3 flex flex-col gap-0.5 overflow-y-auto">
-        <div className="text-[10px] uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-4 pb-1.5">
+        <div className="text-xs uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-4 pb-1.5">
           Overview
         </div>
         {overviewItems.map((item) => (
@@ -139,7 +139,7 @@ export default function Sidebar() {
           />
         ))}
 
-        <div className="text-[10px] uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-4 pb-1.5">
+        <div className="text-xs uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-4 pb-1.5">
           Tools
         </div>
         <NavItem to="/romm-sorter" icon="gamepad" label="Romm Sorter" />
@@ -160,11 +160,11 @@ export default function Sidebar() {
       {/* User footer */}
       {user && (
         <div className="px-4 py-3 border-t border-border-subtle flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-bg-card border border-border flex items-center justify-center text-[11px] font-semibold text-accent">
+          <div className="w-7 h-7 rounded-full bg-bg-card border border-border flex items-center justify-center text-xs font-semibold text-accent">
             {user.username.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs text-text-secondary truncate">{user.username}</div>
+            <div className="text-sm text-text-secondary truncate">{user.username}</div>
           </div>
           <button
             onClick={logout}

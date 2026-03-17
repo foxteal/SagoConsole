@@ -36,7 +36,7 @@ export default function UpdatesWidget() {
   return (
     <div className="bg-bg-surface border border-border-subtle rounded-lg p-4 mb-4">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-medium uppercase tracking-[1px] text-text-tertiary">
+        <span className="text-xs font-medium uppercase tracking-[1px] text-text-tertiary">
           Updates Available
         </span>
         {count > 0 && (
@@ -47,9 +47,9 @@ export default function UpdatesWidget() {
       </div>
 
       {loading ? (
-        <p className="text-[11px] text-text-tertiary font-mono">Checking for updates...</p>
+        <p className="text-[13px] text-text-tertiary font-mono font-light">Checking for updates...</p>
       ) : updates.length === 0 ? (
-        <p className="text-[11px] text-text-tertiary font-mono">All containers up to date</p>
+        <p className="text-[13px] text-text-tertiary font-mono font-light">All containers up to date</p>
       ) : (
         <div className="flex flex-col gap-2">
           {updates.map((u) => (
@@ -57,8 +57,8 @@ export default function UpdatesWidget() {
               key={`${u.host}-${u.name}`}
               className="flex items-center justify-between px-2.5 py-2 bg-bg-card border border-border-subtle rounded-md"
             >
-              <span className="font-mono text-[11px] text-text-primary">{u.name}</span>
-              <span className="text-[10px] text-text-tertiary font-mono font-light">
+              <span className="font-mono text-[13px] text-text-primary font-light">{u.name}</span>
+              <span className="text-xs text-text-tertiary font-mono font-light">
                 {u.host}
               </span>
             </div>
@@ -70,7 +70,7 @@ export default function UpdatesWidget() {
         href={`${window.location.protocol}//tugtainer.sagocactus.com`}
         target="_blank"
         rel="noopener noreferrer"
-        className="block text-right text-[11px] text-accent-dim font-medium mt-2 hover:text-accent transition-colors"
+        className="block text-right text-[13px] text-accent-dim font-medium mt-2 hover:text-accent transition-colors"
       >
         Open Tugtainer &rarr;
       </a>

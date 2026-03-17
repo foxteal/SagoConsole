@@ -68,8 +68,8 @@ export default function AlertsPage() {
     <div className="p-6 pb-10">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-tight">Alerts</h1>
-          <p className="text-xs text-text-tertiary font-mono font-light mt-0.5">
+          <h1 className="text-2xl font-semibold tracking-tight">Alerts</h1>
+          <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
             {activeCount} active &middot; {resolvedCount} resolved
           </p>
         </div>
@@ -81,7 +81,7 @@ export default function AlertsPage() {
           <button
             key={f.value}
             onClick={() => setFilter(f.value)}
-            className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-all ${
+            className={`px-3 py-1 rounded-lg text-[13px] font-medium border transition-all active:scale-[0.97] ${
               filter === f.value
                 ? "bg-accent-glow border-accent-dim text-accent"
                 : "bg-bg-surface border-border-subtle text-text-secondary hover:border-border hover:text-text-primary"
@@ -97,17 +97,17 @@ export default function AlertsPage() {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="w-[30px] text-left px-3 py-2 text-[10px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle" />
-              <th className="text-left px-3 py-2 text-[10px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+              <th className="w-[30px] text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle" />
+              <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                 Source
               </th>
-              <th className="text-left px-3 py-2 text-[10px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+              <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                 Message
               </th>
-              <th className="text-left px-3 py-2 text-[10px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+              <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                 Time
               </th>
-              <th className="text-left px-3 py-2 text-[10px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+              <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                 Status
               </th>
             </tr>
@@ -115,7 +115,7 @@ export default function AlertsPage() {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-3 py-6 text-center text-[11px] text-text-tertiary font-mono">
+                <td colSpan={5} className="px-3 py-6 text-center text-[13px] text-text-tertiary font-mono">
                   No alerts match this filter
                 </td>
               </tr>
@@ -132,23 +132,23 @@ export default function AlertsPage() {
                     />
                   </td>
                   <td className="px-3 py-2.5 border-b border-border-subtle">
-                    <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-bg-card border border-border-subtle">
+                    <span className="font-mono text-xs px-1.5 py-0.5 rounded bg-bg-card border border-border-subtle">
                       {alert.source}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 border-b border-border-subtle text-xs text-text-primary">
+                  <td className="px-3 py-2.5 border-b border-border-subtle text-sm font-light text-text-primary">
                     {alert.message}
                   </td>
-                  <td className="px-3 py-2.5 border-b border-border-subtle font-mono text-[11px] text-text-secondary whitespace-nowrap">
+                  <td className="px-3 py-2.5 border-b border-border-subtle font-mono text-[13px] text-text-secondary font-light whitespace-nowrap">
                     {timeAgo(alert.fired_at)}
                   </td>
                   <td className="px-3 py-2.5 border-b border-border-subtle">
                     {alert.resolved_at ? (
-                      <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-lg bg-green-dim text-green">
+                      <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-lg bg-green-dim text-green">
                         resolved
                       </span>
                     ) : (
-                      <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-lg bg-red-dim text-red">
+                      <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-lg bg-red-dim text-red">
                         active
                       </span>
                     )}
