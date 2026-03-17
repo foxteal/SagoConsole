@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { apiClient } from "../api/client";
 import ServerCard from "../components/dashboard/ServerCard";
+import ContainerGrid from "../components/dashboard/ContainerGrid";
 
 interface Drive {
   label: string;
@@ -23,35 +24,61 @@ interface ServerData {
   drives: Drive[];
 }
 
+interface ContainerInfo {
+  name: string;
+  state: string;
+  project: string;
+}
+
+interface ProjectGroup {
+  name: string;
+  containers: ContainerInfo[];
+}
+
+interface ServerContainers {
+  server: string;
+  total: number;
+  running: number;
+  projects: ProjectGroup[];
+}
+
 export default function DashboardPage() {
   const [servers, setServers] = useState<ServerData[]>([]);
+  const [containerServers, setContainerServers] = useState<ServerContainers[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [secondsAgo, setSecondsAgo] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const fetchMetrics = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const res = await apiClient("/api/metrics/servers");
-      if (res.ok) {
-        const data = await res.json();
+      const [metricsRes, containersRes] = await Promise.all([
+        apiClient("/api/metrics/servers"),
+        apiClient("/api/containers"),
+      ]);
+
+      if (metricsRes.ok) {
+        const data = await metricsRes.json();
         setServers(data.servers);
-        setLastUpdated(Date.now());
-        setSecondsAgo(0);
-        setError(null);
-      } else {
-        setError("Failed to fetch metrics");
       }
+      if (containersRes.ok) {
+        const data = await containersRes.json();
+        setContainerServers(data.servers);
+      }
+
+      setLastUpdated(Date.now());
+      setSecondsAgo(0);
+      setError(null);
     } catch {
-      setError("Failed to fetch metrics");
+      setError("Failed to fetch dashboard data");
     }
   }, []);
 
   useEffect(() => {
-    fetchMetrics();
-    const refresh = setInterval(fetchMetrics, 15000);
+    fetchData();
+    const refresh = setInterval(fetchData, 15000);
     return () => clearInterval(refresh);
-  }, [fetchMetrics]);
+  }, [fetchData]);
 
   // Update "seconds ago" counter
   useEffect(() => {
@@ -85,6 +112,7 @@ export default function DashboardPage() {
           <ServerCard key={server.instance} server={server} />
         ))}
       </div>
+      {containerServers.length > 0 && <ContainerGrid servers={containerServers} />}
     </div>
   );
 }

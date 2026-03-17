@@ -8,6 +8,7 @@ import healthRouter from "./routes/health";
 import authRouter from "./routes/auth";
 import linksRouter from "./routes/links";
 import metricsRouter from "./routes/metrics";
+import containersRouter from "./routes/containers";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(healthRouter);
 app.use(authRouter);
 app.use(linksRouter);
 app.use(metricsRouter);
+app.use(containersRouter);
 
 // Static files (built client)
 const clientDist = path.join(__dirname, "..", "client", "dist");

@@ -9,4 +9,8 @@ export const config = {
     clientSecret: process.env.OIDC_CLIENT_SECRET || "",
     redirectUri: process.env.OIDC_REDIRECT_URI || "",
   },
+  portainer: {
+    url: process.env.PORTAINER_URL || "https://portainer.sagocactus.com",
+    apiKey: process.env.PORTAINER_API_KEY || "",
+  },
 };
