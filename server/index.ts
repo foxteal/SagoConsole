@@ -13,6 +13,7 @@ import alertsRouter from "./routes/alerts";
 import updatesRouter from "./routes/updates";
 import screensRouter from "./routes/screens";
 import proxyRouter from "./routes/proxy";
+import rommSorterRouter from "./routes/romm-sorter";
 import { pollAlerts } from "./services/alerts";
 
 const app = express();
@@ -31,6 +32,7 @@ app.use(alertsRouter);
 app.use(updatesRouter);
 app.use(screensRouter);
 app.use(proxyRouter);
+app.use(rommSorterRouter);
 
 // Static files (built client)
 const clientDist = path.join(__dirname, "..", "client", "dist");

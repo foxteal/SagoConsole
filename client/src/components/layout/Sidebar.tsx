@@ -25,6 +25,7 @@ function NavIcon({ icon }: { icon: string }) {
     download: "M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3",
     queue: "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01",
     play: "M5 3l14 9-14 9V3z",
+    gamepad: "M6 11h4M8 9v4M15 12h.01M18 10h.01M17.32 5H6.68a4 4 0 00-3.978 3.59C2.166 12.054 2 15.554 2 17a2 2 0 004 0l1.16-3.48A2 2 0 019.06 12h5.88a2 2 0 011.9 1.52L18 17a2 2 0 004 0c0-1.446-.166-4.946-.703-8.41A4 4 0 0017.32 5z",
   };
 
   return (
@@ -138,21 +139,18 @@ export default function Sidebar() {
           />
         ))}
 
-        {screens.length > 0 && (
-          <>
-            <div className="text-[10px] uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-4 pb-1.5">
-              Tools
-            </div>
-            {screens.map((screen) => (
-              <NavItem
-                key={screen.slug}
-                to={`/screens/${screen.slug}`}
-                icon={screen.icon}
-                label={screen.name}
-              />
-            ))}
-          </>
-        )}
+        <div className="text-[10px] uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-4 pb-1.5">
+          Tools
+        </div>
+        <NavItem to="/romm-sorter" icon="gamepad" label="Romm Sorter" />
+        {screens.map((screen) => (
+          <NavItem
+            key={screen.slug}
+            to={`/screens/${screen.slug}`}
+            icon={screen.icon}
+            label={screen.name}
+          />
+        ))}
       </nav>
 
       {/* User footer */}

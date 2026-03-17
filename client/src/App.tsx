@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ServicesPage from "./pages/ServicesPage";
 import AlertsPage from "./pages/AlertsPage";
 import GenericScreen from "./pages/GenericScreen";
+import RommSorterPage from "./pages/RommSorterPage";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="services" element={<ServicesPage />} />
         <Route path="alerts" element={<AlertsPage />} />
         <Route path="screens/:slug" element={<GenericScreen />} />
+        <Route path="romm-sorter" element={<RommSorterPage />} />
       </Route>
     </Routes>
   );
