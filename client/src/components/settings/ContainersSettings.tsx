@@ -42,7 +42,7 @@ export default function ContainersSettings() {
     try {
       // Fetch raw containers (without prefs applied) and prefs separately
       const [containersRes, prefsRes] = await Promise.all([
-        apiClient("/api/containers"),
+        apiClient("/api/containers?raw=true"),
         apiClient("/api/container-prefs"),
       ]);
       const containersData = await containersRes.json();

@@ -98,8 +98,10 @@ interface ContainerPrefRow {
   sort_order: number;
 }
 
-export async function getAllContainers(): Promise<ServerContainers[]> {
+export async function getAllContainers(raw = false): Promise<ServerContainers[]> {
   const results = await Promise.all(ENDPOINTS.map(fetchContainers));
+
+  if (raw) return results;
 
   // Apply container prefs
   const db = getDb();

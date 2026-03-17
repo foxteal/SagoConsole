@@ -13,9 +13,10 @@ interface ContainerPrefRow {
   sort_order: number;
 }
 
-router.get("/api/containers", async (_req, res) => {
+router.get("/api/containers", async (req, res) => {
   try {
-    const servers = await getAllContainers();
+    const raw = req.query.raw === "true";
+    const servers = await getAllContainers(raw);
     res.json({ servers });
   } catch (err) {
     console.error("Containers error:", err);
