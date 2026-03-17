@@ -1,0 +1,2423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SagoConsole</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #080e1a;
+    --bg-base: #0c1222;
+    --bg-surface: #131b2e;
+    --bg-card: #1a2340;
+    --bg-card-hover: #1f2b4d;
+    --border: #243055;
+    --border-subtle: #1a2744;
+    --accent: #2dd4bf;
+    --accent-dim: #0d9488;
+    --accent-glow: rgba(45, 212, 191, 0.12);
+    --accent-glow-strong: rgba(45, 212, 191, 0.25);
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+    --green: #34d399;
+    --green-dim: rgba(52, 211, 153, 0.15);
+    --red: #f87171;
+    --red-dim: rgba(248, 113, 113, 0.15);
+    --amber: #f97316;
+    --amber-dim: rgba(249, 115, 22, 0.15);
+    --font-display: 'Outfit', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ═══ SIDEBAR ═══ */
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--bg-base);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+  }
+
+  .sidebar-logo {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sidebar-logo .logo-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--bg-deep);
+    box-shadow: 0 0 12px var(--accent-glow-strong);
+  }
+
+  .sidebar-logo .logo-text {
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+  }
+
+  .sidebar-logo .logo-sub {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-tertiary);
+    padding: 16px 12px 6px;
+    font-weight: 500;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    position: relative;
+  }
+
+  .nav-item:hover {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .nav-item.active {
+    background: var(--accent-glow);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 0 3px 3px 0;
+  }
+
+  .nav-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    opacity: 0.8;
+    flex-shrink: 0;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--red-dim);
+    color: var(--red);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+  }
+
+  .sidebar-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sidebar-footer .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .sidebar-footer .user-info {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* ═══ MAIN CONTENT ═══ */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--bg-deep);
+  }
+
+  .main::-webkit-scrollbar { width: 6px; }
+  .main::-webkit-scrollbar-track { background: transparent; }
+  .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .page {
+    display: none;
+    padding: 24px 28px 40px;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+  .page.active {
+    display: block;
+    opacity: 1;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .page-title {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .page-subtitle {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+    font-family: var(--font-mono);
+    font-weight: 300;
+  }
+
+  /* ═══ CARDS ═══ */
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--border); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  /* ═══ DASHBOARD ═══ */
+  .server-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .server-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 16px 18px;
+    transition: all 0.2s;
+  }
+
+  .server-card:hover {
+    border-color: var(--border);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  }
+
+  .server-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .server-name {
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .server-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px rgba(52, 211, 153, 0.4);
+  }
+
+  .server-uptime {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 300;
+  }
+
+  .metric-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 0;
+  }
+
+  .metric-label {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-weight: 400;
+    min-width: 50px;
+  }
+
+  .metric-bar-wrap {
+    flex: 1;
+    margin: 0 10px;
+    height: 4px;
+    background: var(--bg-card);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .metric-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  .metric-bar.low { background: var(--green); }
+  .metric-bar.mid { background: var(--accent); }
+  .metric-bar.high { background: var(--amber); }
+  .metric-bar.critical { background: var(--red); }
+
+  .metric-value {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    min-width: 36px;
+    text-align: right;
+    font-weight: 400;
+  }
+
+  .metric-divider {
+    border: none;
+    border-top: 1px solid var(--border-subtle);
+    margin: 8px 0;
+  }
+
+  .temp-net-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+
+  .temp-net-item {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .temp-net-item span { color: var(--text-secondary); }
+
+  .drives-section {
+    margin-top: 6px;
+  }
+
+  .drive-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 0;
+  }
+
+  .drive-label {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    min-width: 85px;
+    font-family: var(--font-mono);
+    font-weight: 300;
+  }
+
+  .drive-bar-wrap {
+    flex: 1;
+    margin: 0 8px;
+    height: 3px;
+    background: var(--bg-card);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .drive-bar {
+    height: 100%;
+    border-radius: 2px;
+  }
+
+  .drive-size {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    min-width: 48px;
+    text-align: right;
+    font-weight: 300;
+  }
+
+  /* ═══ DASHBOARD BOTTOM GRID ═══ */
+  .dashboard-bottom {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+  }
+
+  /* ═══ CONTAINER STATUS ═══ */
+  .container-status-section { margin-bottom: 0; }
+
+  .server-group {
+    margin-bottom: 16px;
+  }
+
+  .server-group-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .server-group-header .count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 300;
+  }
+
+  .project-clusters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .project-cluster {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+
+  .project-cluster:hover {
+    border-color: var(--border);
+    background: var(--bg-card-hover);
+  }
+
+  .project-cluster-name {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-right: 4px;
+  }
+
+  .container-dots {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .c-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: relative;
+    cursor: default;
+  }
+
+  .c-dot.up {
+    background: var(--green);
+    box-shadow: 0 0 4px rgba(52, 211, 153, 0.3);
+  }
+
+  .c-dot.down {
+    background: var(--red);
+    box-shadow: 0 0 4px rgba(248, 113, 113, 0.3);
+  }
+
+  .c-dot[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    white-space: nowrap;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  /* ═══ SIDEBAR WIDGETS ═══ */
+  .widget { margin-bottom: 16px; }
+
+  .widget-title {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .update-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .update-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    background: var(--bg-card);
+    border-radius: 6px;
+    border: 1px solid var(--border-subtle);
+  }
+
+  .update-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-primary);
+    font-weight: 400;
+  }
+
+  .update-behind {
+    font-size: 10px;
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-weight: 300;
+  }
+
+  .widget-link {
+    display: block;
+    text-align: right;
+    font-size: 11px;
+    color: var(--accent-dim);
+    margin-top: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+
+  .widget-link:hover { color: var(--accent); }
+
+  .alert-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .alert-item {
+    padding: 8px 10px;
+    background: var(--bg-card);
+    border-radius: 6px;
+    border: 1px solid var(--border-subtle);
+  }
+
+  .alert-item-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 3px;
+  }
+
+  .alert-severity {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .alert-severity.critical { background: var(--red); box-shadow: 0 0 4px rgba(248,113,113,0.4); }
+  .alert-severity.warning { background: var(--amber); box-shadow: 0 0 4px rgba(251,191,36,0.3); }
+
+  .alert-msg {
+    font-size: 11px;
+    color: var(--text-primary);
+    font-weight: 400;
+  }
+
+  .alert-time {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    margin-left: 12px;
+    font-weight: 300;
+  }
+
+  .alert-resolved {
+    font-size: 9px;
+    color: var(--text-tertiary);
+    background: var(--bg-surface);
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 6px;
+    font-family: var(--font-mono);
+  }
+
+  /* ═══ SERVICES PAGE ═══ */
+  .service-category {
+    margin-bottom: 24px;
+  }
+
+  .category-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-size: 11px;
+  }
+
+  .category-icon {
+    font-size: 14px;
+    opacity: 0.6;
+  }
+
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+  }
+
+  .service-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .service-link:hover {
+    border-color: var(--accent-dim);
+    background: var(--bg-card);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .service-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .service-info .service-name {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .service-info .service-url {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    font-weight: 300;
+  }
+
+  /* ═══ ALERTS PAGE ═══ */
+  .filter-chips {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .chip {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+
+  .chip.active {
+    background: var(--accent-glow);
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .chip:hover:not(.active) {
+    border-color: var(--border);
+    color: var(--text-primary);
+  }
+
+  .alerts-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .alerts-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .alerts-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+  }
+
+  .alerts-table tr:hover td {
+    background: var(--bg-surface);
+  }
+
+  .alerts-table .source-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    font-weight: 400;
+  }
+
+  .status-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-family: var(--font-mono);
+  }
+
+  .status-badge.active { background: var(--red-dim); color: var(--red); }
+  .status-badge.resolved { background: var(--green-dim); color: var(--green); }
+
+  /* ═══ CUSTOM SCREENS ═══ */
+  .screen-layout {
+    display: grid;
+    gap: 16px;
+  }
+
+  .screen-layout.three-col {
+    grid-template-columns: 280px 1fr 260px;
+  }
+
+  .panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .panel-body {
+    padding: 8px;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 420px;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.1s;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .file-item:hover { background: var(--bg-card); }
+  .file-item.selected { background: var(--accent-glow); color: var(--accent); }
+
+  .file-icon { font-size: 14px; opacity: 0.5; }
+
+  .file-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-tertiary);
+    margin-left: auto;
+    font-weight: 300;
+  }
+
+  .platform-select {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--bg-card);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: 12px;
+    outline: none;
+    margin-bottom: 8px;
+    transition: border-color 0.15s;
+  }
+
+  .platform-select:focus {
+    border-color: var(--accent);
+  }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-deep);
+    border-color: var(--accent);
+  }
+
+  .btn-primary:hover {
+    background: #14b8a6;
+    box-shadow: 0 0 12px var(--accent-glow-strong);
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+  }
+
+  .btn-ghost:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  .btn-sm {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .btn-approve {
+    background: var(--green-dim);
+    color: var(--green);
+    border-color: transparent;
+  }
+
+  .btn-approve:hover { background: rgba(52, 211, 153, 0.25); }
+
+  .btn-skip {
+    background: var(--bg-card);
+    color: var(--text-tertiary);
+    border-color: transparent;
+  }
+
+  .btn-skip:hover { background: var(--bg-card-hover); color: var(--text-secondary); }
+
+  .stuck-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .stuck-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border-subtle);
+    position: sticky;
+    top: 0;
+    background: var(--bg-surface);
+  }
+
+  .stuck-table td {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 300;
+  }
+
+  .stuck-table tr:hover td { background: var(--bg-card); }
+
+  .stuck-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+  }
+
+  .stuck-stat {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .stuck-stat strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .actions-cell {
+    display: flex;
+    gap: 4px;
+  }
+
+  .history-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 12px;
+  }
+
+  .history-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .history-table td {
+    padding: 6px 10px;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    font-weight: 300;
+  }
+
+  /* ═══ RESPONSIVE ═══ */
+  @media (max-width: 1400px) {
+    .server-grid { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-bottom { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">SC</div>
+    <div>
+      <div class="logo-text">SagoConsole</div>
+      <div class="logo-sub">Homelab</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" data-page="dashboard">
+      <span class="nav-icon">&#9632;</span>
+      Dashboard
+    </div>
+    <div class="nav-item" data-page="services">
+      <span class="nav-icon">&#9733;</span>
+      Services
+    </div>
+    <div class="nav-item" data-page="alerts">
+      <span class="nav-icon">&#9888;</span>
+      Alerts
+      <span class="nav-badge">3</span>
+    </div>
+
+    <div class="nav-section-label">Tools</div>
+    <div class="nav-item" data-page="romm-sorter">
+      <span class="nav-icon">&#9654;</span>
+      Romm Sorter
+    </div>
+    <div class="nav-item" data-page="tdarr-cleanup">
+      <span class="nav-icon">&#9881;</span>
+      Tdarr Cleanup
+    </div>
+    <div class="nav-item" data-page="downloads">
+      <span class="nav-icon">&#8615;</span>
+      Downloads
+    </div>
+    <div class="nav-item" data-page="tdarr-queue">
+      <span class="nav-icon">&#9638;</span>
+      Tdarr Queue
+    </div>
+    <div class="nav-item" data-page="jellyfin">
+      <span class="nav-icon">&#9835;</span>
+      Jellyfin
+    </div>
+
+    <div style="flex:1;"></div>
+    <div class="nav-item" data-page="settings">
+      <span class="nav-icon">&#9881;</span>
+      Settings
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="avatar">S</div>
+    <div class="user-info">skip &middot; via Authentik</div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<main class="main">
+
+  <!-- ════════════════════ DASHBOARD ════════════════════ -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle">last updated 4s ago</div>
+      </div>
+    </div>
+
+    <!-- Server KPI Cards -->
+    <div class="server-grid">
+
+      <!-- FIDEO -->
+      <div class="server-card">
+        <div class="server-header">
+          <div class="server-name"><span class="server-dot"></span> Fideo</div>
+          <div class="server-uptime">up 14d 6h</div>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">CPU</span>
+          <div class="metric-bar-wrap"><div class="metric-bar low" style="width:23%"></div></div>
+          <span class="metric-value">23%</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Mem</span>
+          <div class="metric-bar-wrap"><div class="metric-bar mid" style="width:61%"></div></div>
+          <span class="metric-value">61%</span>
+        </div>
+        <hr class="metric-divider">
+        <div class="temp-net-row">
+          <div class="temp-net-item">&#9832; <span>52°C</span></div>
+          <div class="temp-net-item">&#8593;<span>12 MB/s</span> &#8595;<span>45 MB/s</span></div>
+        </div>
+        <hr class="metric-divider">
+        <div class="drives-section">
+          <div class="drive-row">
+            <span class="drive-label">OS</span>
+            <div class="drive-bar-wrap"><div class="drive-bar mid" style="width:45%;background:var(--accent)"></div></div>
+            <span class="drive-size">225/500G</span>
+          </div>
+          <div class="drive-row">
+            <span class="drive-label">Docker NVMe</span>
+            <div class="drive-bar-wrap"><div class="drive-bar mid" style="width:62%;background:var(--accent)"></div></div>
+            <span class="drive-size">2.2/3.6T</span>
+          </div>
+          <div class="drive-row">
+            <span class="drive-label">DAS Media</span>
+            <div class="drive-bar-wrap"><div class="drive-bar high" style="width:78%;background:var(--amber)"></div></div>
+            <span class="drive-size">11.3/14.5T</span>
+          </div>
+          <div class="drive-row">
+            <span class="drive-label">Nextcloud</span>
+            <div class="drive-bar-wrap"><div class="drive-bar low" style="width:31%;background:var(--green)"></div></div>
+            <span class="drive-size">310G/1T</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AVA -->
+      <div class="server-card">
+        <div class="server-header">
+          <div class="server-name"><span class="server-dot"></span> Ava</div>
+          <div class="server-uptime">up 42d 11h</div>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">CPU</span>
+          <div class="metric-bar-wrap"><div class="metric-bar low" style="width:8%"></div></div>
+          <span class="metric-value">8%</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Mem</span>
+          <div class="metric-bar-wrap"><div class="metric-bar low" style="width:34%"></div></div>
+          <span class="metric-value">34%</span>
+        </div>
+        <hr class="metric-divider">
+        <div class="temp-net-row">
+          <div class="temp-net-item">&#9832; <span>41°C</span></div>
+          <div class="temp-net-item">&#8593;<span>0.2 MB/s</span> &#8595;<span>1.1 MB/s</span></div>
+        </div>
+        <hr class="metric-divider">
+        <div class="drives-section">
+          <div class="drive-row">
+            <span class="drive-label">OS</span>
+            <div class="drive-bar-wrap"><div class="drive-bar low" style="width:22%;background:var(--green)"></div></div>
+            <span class="drive-size">55/250G</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KAI -->
+      <div class="server-card">
+        <div class="server-header">
+          <div class="server-name"><span class="server-dot"></span> Kai</div>
+          <div class="server-uptime">up 42d 11h</div>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">CPU</span>
+          <div class="metric-bar-wrap"><div class="metric-bar low" style="width:5%"></div></div>
+          <span class="metric-value">5%</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Mem</span>
+          <div class="metric-bar-wrap"><div class="metric-bar low" style="width:29%"></div></div>
+          <span class="metric-value">29%</span>
+        </div>
+        <hr class="metric-divider">
+        <div class="temp-net-row">
+          <div class="temp-net-item">&#9832; <span>39°C</span></div>
+          <div class="temp-net-item">&#8593;<span>0.1 MB/s</span> &#8595;<span>0.8 MB/s</span></div>
+        </div>
+        <hr class="metric-divider">
+        <div class="drives-section">
+          <div class="drive-row">
+            <span class="drive-label">OS</span>
+            <div class="drive-bar-wrap"><div class="drive-bar low" style="width:19%;background:var(--green)"></div></div>
+            <span class="drive-size">48/250G</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- VPS -->
+      <div class="server-card">
+        <div class="server-header">
+          <div class="server-name"><span class="server-dot"></span> VPS</div>
+          <div class="server-uptime">up 91d 3h</div>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">CPU</span>
+          <div class="metric-bar-wrap"><div class="metric-bar low" style="width:12%"></div></div>
+          <span class="metric-value">12%</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Mem</span>
+          <div class="metric-bar-wrap"><div class="metric-bar mid" style="width:55%"></div></div>
+          <span class="metric-value">55%</span>
+        </div>
+        <hr class="metric-divider">
+        <div class="temp-net-row">
+          <div class="temp-net-item">&#9832; <span>44°C</span></div>
+          <div class="temp-net-item">&#8593;<span>3.4 MB/s</span> &#8595;<span>8.2 MB/s</span></div>
+        </div>
+        <hr class="metric-divider">
+        <div class="drives-section">
+          <div class="drive-row">
+            <span class="drive-label">OS</span>
+            <div class="drive-bar-wrap"><div class="drive-bar mid" style="width:55%;background:var(--accent)"></div></div>
+            <span class="drive-size">44/80G</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom: Containers + Widgets -->
+    <div class="dashboard-bottom">
+
+      <!-- Container Status -->
+      <div class="card container-status-section">
+        <div class="card-header">
+          <div class="card-title">Container Status</div>
+        </div>
+
+        <!-- Fideo -->
+        <div class="server-group">
+          <div class="server-group-header">Fideo <span class="count">31 containers</span></div>
+          <div class="project-clusters">
+            <div class="project-cluster">
+              <span class="project-cluster-name">arr-stack</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="sonarr"></div>
+                <div class="c-dot up" data-tooltip="radarr"></div>
+                <div class="c-dot up" data-tooltip="prowlarr"></div>
+                <div class="c-dot up" data-tooltip="bazarr"></div>
+                <div class="c-dot up" data-tooltip="qbittorrent"></div>
+                <div class="c-dot up" data-tooltip="overseerr"></div>
+                <div class="c-dot up" data-tooltip="whisparr"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">jellyfin</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="jellyfin"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">tdarr</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="tdarr"></div>
+                <div class="c-dot up" data-tooltip="tdarr-node"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">immich</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="immich-server"></div>
+                <div class="c-dot up" data-tooltip="immich-ml"></div>
+                <div class="c-dot up" data-tooltip="immich-redis"></div>
+                <div class="c-dot up" data-tooltip="immich-db"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">litellm</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="litellm"></div>
+                <div class="c-dot up" data-tooltip="litellm-db"></div>
+                <div class="c-dot up" data-tooltip="prometheus"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">open-webui</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="open-webui"></div>
+                <div class="c-dot up" data-tooltip="ollama"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">nextcloud</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="nextcloud"></div>
+                <div class="c-dot up" data-tooltip="nextcloud-db"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">romm</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="romm"></div>
+                <div class="c-dot up" data-tooltip="romm-db"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">monitoring</span>
+              <div class="container-dots">
+                <div class="c-dot down" data-tooltip="node-exporter"></div>
+                <div class="c-dot down" data-tooltip="cadvisor"></div>
+                <div class="c-dot down" data-tooltip="grafana"></div>
+                <div class="c-dot down" data-tooltip="blackbox-exporter"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">tugtainer</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="tugtainer"></div>
+                <div class="c-dot up" data-tooltip="socket-proxy"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">misc</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="stirling-pdf"></div>
+                <div class="c-dot up" data-tooltip="vaultwarden"></div>
+                <div class="c-dot up" data-tooltip="dashy"></div>
+                <div class="c-dot up" data-tooltip="uptime-kuma"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ava -->
+        <div class="server-group">
+          <div class="server-group-header">Ava <span class="count">5 containers</span></div>
+          <div class="project-clusters">
+            <div class="project-cluster">
+              <span class="project-cluster-name">pihole</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="pihole"></div></div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">syncthing</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="syncthing"></div></div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">twingate</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="twingate-connector"></div></div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">portainer</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="portainer-agent"></div></div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">beszel</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="beszel-agent"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kai -->
+        <div class="server-group">
+          <div class="server-group-header">Kai <span class="count">5 containers</span></div>
+          <div class="project-clusters">
+            <div class="project-cluster">
+              <span class="project-cluster-name">pihole</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="pihole"></div></div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">syncthing</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="syncthing"></div></div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">twingate</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="twingate-connector"></div></div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">portainer</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="portainer-agent"></div></div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">beszel</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="beszel-agent"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VPS -->
+        <div class="server-group">
+          <div class="server-group-header">VPS <span class="count">7 containers</span></div>
+          <div class="project-clusters">
+            <div class="project-cluster">
+              <span class="project-cluster-name">authentik</span>
+              <div class="container-dots">
+                <div class="c-dot up" data-tooltip="authentik-server"></div>
+                <div class="c-dot up" data-tooltip="authentik-worker"></div>
+                <div class="c-dot up" data-tooltip="authentik-db"></div>
+                <div class="c-dot up" data-tooltip="authentik-redis"></div>
+              </div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">npm</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="npm"></div></div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">tugtainer</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="tugtainer-agent"></div></div>
+            </div>
+            <div class="project-cluster">
+              <span class="project-cluster-name">minecraft</span>
+              <div class="container-dots"><div class="c-dot up" data-tooltip="minecraft-server"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Widgets Column -->
+      <div>
+        <!-- Updates Widget -->
+        <div class="card widget">
+          <div class="widget-title">
+            Updates Available
+            <span style="color:var(--amber);font-family:var(--font-mono);font-size:12px;font-weight:600;">4</span>
+          </div>
+          <div class="update-list">
+            <div class="update-item">
+              <span class="update-name">jellyfin</span>
+              <span class="update-behind">2 behind</span>
+            </div>
+            <div class="update-item">
+              <span class="update-name">sonarr</span>
+              <span class="update-behind">1 behind</span>
+            </div>
+            <div class="update-item">
+              <span class="update-name">prowlarr</span>
+              <span class="update-behind">1 behind</span>
+            </div>
+            <div class="update-item">
+              <span class="update-name">immich-server</span>
+              <span class="update-behind">3 behind</span>
+            </div>
+          </div>
+          <a href="#" class="widget-link">Open Tugtainer &#8594;</a>
+        </div>
+
+        <!-- Recent Alerts Widget -->
+        <div class="card widget">
+          <div class="widget-title">
+            Recent Alerts
+            <a href="#" class="widget-link" style="margin:0" onclick="switchPage('alerts');return false;">View all &#8594;</a>
+          </div>
+          <div class="alert-list">
+            <div class="alert-item">
+              <div class="alert-item-header">
+                <span class="alert-severity critical"></span>
+                <span class="alert-msg">Backup failed: nextcloud-db</span>
+              </div>
+              <span class="alert-time">2 hours ago</span>
+            </div>
+            <div class="alert-item">
+              <div class="alert-item-header">
+                <span class="alert-severity warning"></span>
+                <span class="alert-msg">High CPU: Fideo (92%)</span>
+                <span class="alert-resolved">resolved</span>
+              </div>
+              <span class="alert-time">6 hours ago</span>
+            </div>
+            <div class="alert-item">
+              <div class="alert-item-header">
+                <span class="alert-severity warning"></span>
+                <span class="alert-msg">Disk space: DAS Media (78%)</span>
+              </div>
+              <span class="alert-time">1 day ago</span>
+            </div>
+            <div class="alert-item">
+              <div class="alert-item-header">
+                <span class="alert-severity critical"></span>
+                <span class="alert-msg">Tdarr error: movie.mkv</span>
+                <span class="alert-resolved">resolved</span>
+              </div>
+              <span class="alert-time">2 days ago</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SERVICES ════════════════════ -->
+  <div class="page" id="page-services">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Services</div>
+        <div class="page-subtitle">35 services across 9 categories</div>
+      </div>
+    </div>
+
+    <div class="service-category">
+      <div class="category-title"><span class="category-icon">&#9881;</span> AI</div>
+      <div class="service-grid">
+        <a class="service-link" href="https://chat.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9673;</div>
+          <div class="service-info"><div class="service-name">Open WebUI</div><div class="service-url">chat.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://litellm.sagocactus.com/ui" target="_blank">
+          <div class="service-icon">&#9672;</div>
+          <div class="service-info"><div class="service-name">LiteLLM</div><div class="service-url">litellm.sagocactus.com</div></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="service-category">
+      <div class="category-title"><span class="category-icon">&#9654;</span> Media</div>
+      <div class="service-grid">
+        <a class="service-link" href="https://jelly.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9835;</div>
+          <div class="service-info"><div class="service-name">Jellyfin</div><div class="service-url">jelly.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://bazarr.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9636;</div>
+          <div class="service-info"><div class="service-name">Bazarr</div><div class="service-url">bazarr.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://prowlarr.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9678;</div>
+          <div class="service-info"><div class="service-name">Prowlarr</div><div class="service-url">prowlarr.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://qbt.sagocactus.com" target="_blank">
+          <div class="service-icon">&#8615;</div>
+          <div class="service-info"><div class="service-name">qBittorrent</div><div class="service-url">qbt.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://radarr.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9899;</div>
+          <div class="service-info"><div class="service-name">Radarr</div><div class="service-url">radarr.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://requests.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9733;</div>
+          <div class="service-info"><div class="service-name">Seerr</div><div class="service-url">requests.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://sonarr.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9898;</div>
+          <div class="service-info"><div class="service-name">Sonarr</div><div class="service-url">sonarr.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://tdarr.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9881;</div>
+          <div class="service-info"><div class="service-name">Tdarr</div><div class="service-url">tdarr.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://whisp.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9830;</div>
+          <div class="service-info"><div class="service-name">Whisparr</div><div class="service-url">whisp.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://photos.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9636;</div>
+          <div class="service-info"><div class="service-name">Immich</div><div class="service-url">photos.sagocactus.com</div></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="service-category">
+      <div class="category-title"><span class="category-icon">&#9654;</span> Gaming</div>
+      <div class="service-grid">
+        <a class="service-link" href="https://minecraft.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9632;</div>
+          <div class="service-info"><div class="service-name">Minecraft</div><div class="service-url">minecraft.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://romm.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9654;</div>
+          <div class="service-info"><div class="service-name">RomM</div><div class="service-url">romm.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://servers.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9733;</div>
+          <div class="service-info"><div class="service-name">Sago Servers</div><div class="service-url">servers.sagocactus.com</div></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="service-category">
+      <div class="category-title"><span class="category-icon">&#9998;</span> Productivity</div>
+      <div class="service-grid">
+        <a class="service-link" href="https://cloud.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9729;</div>
+          <div class="service-info"><div class="service-name">Nextcloud</div><div class="service-url">cloud.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://pdf.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9776;</div>
+          <div class="service-info"><div class="service-name">Stirling PDF</div><div class="service-url">pdf.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://bwvault.foxteal.com" target="_blank">
+          <div class="service-icon">&#9919;</div>
+          <div class="service-info"><div class="service-name">Vaultwarden</div><div class="service-url">bwvault.foxteal.com</div></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="service-category">
+      <div class="category-title"><span class="category-icon">&#9888;</span> Projects</div>
+      <div class="service-grid">
+        <a class="service-link" href="https://apkbuild.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9686;</div>
+          <div class="service-info"><div class="service-name">APK Build</div><div class="service-url">apkbuild.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://dueslinger.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9733;</div>
+          <div class="service-info"><div class="service-name">DueSlinger</div><div class="service-url">dueslinger.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://kijova.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9654;</div>
+          <div class="service-info"><div class="service-name">Kijova</div><div class="service-url">kijova.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://obsidnd.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9830;</div>
+          <div class="service-info"><div class="service-name">ObsiDnD</div><div class="service-url">obsidnd.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://pscdashboard.foxteal.com" target="_blank">
+          <div class="service-icon">&#9636;</div>
+          <div class="service-info"><div class="service-name">PSC Dashboard</div><div class="service-url">pscdashboard.foxteal.com</div></div>
+        </a>
+        <a class="service-link" href="https://thindime.foxteal.com" target="_blank">
+          <div class="service-icon">&#9673;</div>
+          <div class="service-info"><div class="service-name">ThinDime</div><div class="service-url">thindime.foxteal.com</div></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="service-category">
+      <div class="category-title"><span class="category-icon">&#9830;</span> Obsidian</div>
+      <div class="service-grid">
+        <a class="service-link" href="https://192.168.90.183:8101" target="_blank">
+          <div class="service-icon" style="color:#7c3aed;">&#9830;</div>
+          <div class="service-info"><div class="service-name">PSC</div><div class="service-url">192.168.90.183:8101</div></div>
+        </a>
+        <a class="service-link" href="https://192.168.90.183:8102" target="_blank">
+          <div class="service-icon" style="color:#7c3aed;">&#9830;</div>
+          <div class="service-info"><div class="service-name">TTRPG</div><div class="service-url">192.168.90.183:8102</div></div>
+        </a>
+        <a class="service-link" href="https://192.168.90.183:8103" target="_blank">
+          <div class="service-icon" style="color:#7c3aed;">&#9830;</div>
+          <div class="service-info"><div class="service-name">SagoCactus</div><div class="service-url">192.168.90.183:8103</div></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="service-category">
+      <div class="category-title"><span class="category-icon">&#9881;</span> Infrastructure</div>
+      <div class="service-grid">
+        <a class="service-link" href="https://backrest.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9744;</div>
+          <div class="service-info"><div class="service-name">Backrest</div><div class="service-url">backrest.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://npm.sagocactus.com" target="_blank">
+          <div class="service-icon">&#9741;</div>
+          <div class="service-info"><div class="service-name">NPM</div><div class="service-url">npm.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://piava.sagocactus.com/admin/" target="_blank">
+          <div class="service-icon" style="color:var(--red);">&#9678;</div>
+          <div class="service-info"><div class="service-name">Pi-hole Ava</div><div class="service-url">piava.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://pikai.sagocactus.com/admin" target="_blank">
+          <div class="service-icon" style="color:var(--red);">&#9678;</div>
+          <div class="service-info"><div class="service-name">Pi-hole Kai</div><div class="service-url">pikai.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="https://portainer.sagocactus.com" target="_blank">
+          <div class="service-icon" style="color:#0db7ed;">&#9638;</div>
+          <div class="service-info"><div class="service-name">Portainer</div><div class="service-url">portainer.sagocactus.com</div></div>
+        </a>
+        <a class="service-link" href="http://192.168.90.176:8384" target="_blank">
+          <div class="service-icon">&#8644;</div>
+          <div class="service-info"><div class="service-name">Sync Ava</div><div class="service-url">192.168.90.176:8384</div></div>
+        </a>
+        <a class="service-link" href="http://192.168.90.183:8384" target="_blank">
+          <div class="service-icon">&#8644;</div>
+          <div class="service-info"><div class="service-name">Sync Fideo</div><div class="service-url">192.168.90.183:8384</div></div>
+        </a>
+        <a class="service-link" href="http://192.168.90.177:8384" target="_blank">
+          <div class="service-icon">&#8644;</div>
+          <div class="service-info"><div class="service-name">Sync Kai</div><div class="service-url">192.168.90.177:8384</div></div>
+        </a>
+        <a class="service-link" href="https://lazylab.twingate.com/" target="_blank">
+          <div class="service-icon">&#9906;</div>
+          <div class="service-info"><div class="service-name">Twingate</div><div class="service-url">lazylab.twingate.com</div></div>
+        </a>
+        <a class="service-link" href="https://dash.cloudflare.com" target="_blank">
+          <div class="service-icon" style="color:#f48120;">&#9729;</div>
+          <div class="service-info"><div class="service-name">Cloudflare</div><div class="service-url">dash.cloudflare.com</div></div>
+        </a>
+        <a class="service-link" href="https://auth.foxteal.com/" target="_blank">
+          <div class="service-icon" style="color:#fd4b2d;">&#9919;</div>
+          <div class="service-info"><div class="service-name">Authentik</div><div class="service-url">auth.foxteal.com</div></div>
+        </a>
+        <a class="service-link" href="https://tugtainer.sagocactus.com/" target="_blank">
+          <div class="service-icon" style="color:var(--accent);">&#9881;</div>
+          <div class="service-info"><div class="service-name">Tugtainer</div><div class="service-url">tugtainer.sagocactus.com</div></div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════ ALERTS ════════════════════ -->
+  <div class="page" id="page-alerts">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Alerts</div>
+        <div class="page-subtitle">3 active &middot; 7 resolved (last 7 days)</div>
+      </div>
+    </div>
+
+    <div class="filter-chips">
+      <div class="chip active">All</div>
+      <div class="chip">Critical</div>
+      <div class="chip">Warning</div>
+      <div class="chip">Resolved</div>
+    </div>
+
+    <div class="card">
+      <table class="alerts-table">
+        <thead>
+          <tr>
+            <th style="width:30px;"></th>
+            <th>Source</th>
+            <th>Message</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="alert-severity critical"></span></td>
+            <td><span class="source-badge">backup</span></td>
+            <td style="color:var(--text-primary)">Backup failed: nextcloud-db — pg_dump returned exit code 1</td>
+            <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">2h ago</td>
+            <td><span class="status-badge active">active</span></td>
+          </tr>
+          <tr>
+            <td><span class="alert-severity critical"></span></td>
+            <td><span class="source-badge">container</span></td>
+            <td style="color:var(--text-primary)">Container down: node-exporter (Fideo) — stopped manually</td>
+            <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">3h ago</td>
+            <td><span class="status-badge active">active</span></td>
+          </tr>
+          <tr>
+            <td><span class="alert-severity warning"></span></td>
+            <td><span class="source-badge">disk</span></td>
+            <td style="color:var(--text-primary)">Disk space warning: DAS Media at 78% (11.3/14.5 TB)</td>
+            <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">1d ago</td>
+            <td><span class="status-badge active">active</span></td>
+          </tr>
+          <tr>
+            <td><span class="alert-severity warning"></span></td>
+            <td><span class="source-badge">cpu</span></td>
+            <td>High CPU: Fideo sustained 92% for 5 minutes (tdarr transcode)</td>
+            <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">6h ago</td>
+            <td><span class="status-badge resolved">resolved</span></td>
+          </tr>
+          <tr>
+            <td><span class="alert-severity critical"></span></td>
+            <td><span class="source-badge">tdarr</span></td>
+            <td>Transcode error: /source/arr-movies/Movie (2024)/movie.mkv — codec not supported</td>
+            <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">2d ago</td>
+            <td><span class="status-badge resolved">resolved</span></td>
+          </tr>
+          <tr>
+            <td><span class="alert-severity warning"></span></td>
+            <td><span class="source-badge">memory</span></td>
+            <td>High memory: VPS at 91% — authentik-worker spike</td>
+            <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">3d ago</td>
+            <td><span class="status-badge resolved">resolved</span></td>
+          </tr>
+          <tr>
+            <td><span class="alert-severity critical"></span></td>
+            <td><span class="source-badge">backup</span></td>
+            <td>Backup failed: romm-db — container not running during backup window</td>
+            <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">4d ago</td>
+            <td><span class="status-badge resolved">resolved</span></td>
+          </tr>
+          <tr>
+            <td><span class="alert-severity warning"></span></td>
+            <td><span class="source-badge">container</span></td>
+            <td>Container restart: ollama — OOM killed, restarted automatically</td>
+            <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">5d ago</td>
+            <td><span class="status-badge resolved">resolved</span></td>
+          </tr>
+          <tr>
+            <td><span class="alert-severity critical"></span></td>
+            <td><span class="source-badge">tdarr</span></td>
+            <td>Transcode error: /source/arr-tv/Show (2023)/S01E03.mkv — health check failed</td>
+            <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">6d ago</td>
+            <td><span class="status-badge resolved">resolved</span></td>
+          </tr>
+          <tr>
+            <td><span class="alert-severity warning"></span></td>
+            <td><span class="source-badge">disk</span></td>
+            <td>Disk space warning: Docker NVMe at 65% (threshold: 60%)</td>
+            <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">7d ago</td>
+            <td><span class="status-badge resolved">resolved</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════════════════ ROMM SORTER ════════════════════ -->
+  <div class="page" id="page-romm-sorter">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Romm Sorter</div>
+        <div class="page-subtitle">sort downloaded ROMs into the library</div>
+      </div>
+    </div>
+
+    <div class="screen-layout three-col">
+      <!-- Downloads Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          Downloads
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);">8 items</span>
+        </div>
+        <div class="panel-body">
+          <div class="file-item selected">
+            <span class="file-icon">&#128230;</span>
+            <span>Super Mario Bros Collection.7z</span>
+            <span class="file-meta">2.4 GB</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon">&#128230;</span>
+            <span>Zelda - ALTTP (USA).zip</span>
+            <span class="file-meta">1.1 MB</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon">&#128230;</span>
+            <span>PS2 RPG Pack.7z</span>
+            <span class="file-meta">12.8 GB</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon">&#128230;</span>
+            <span>Pokemon Emerald (USA).zip</span>
+            <span class="file-meta">8.2 MB</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon">&#128230;</span>
+            <span>Metroid Dread (NSP).7z</span>
+            <span class="file-meta">4.1 GB</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon">&#128193;</span>
+            <span>Castlevania SOTN</span>
+            <span class="file-meta">dir</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon">&#128230;</span>
+            <span>Mario Kart Wii.wbfs.zip</span>
+            <span class="file-meta">4.7 GB</span>
+          </div>
+          <div class="file-item">
+            <span class="file-icon">&#128230;</span>
+            <span>GBA Classics Pack.zip</span>
+            <span class="file-meta">156 MB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inspect Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          Inspect &mdash; Super Mario Bros Collection.7z
+        </div>
+        <div class="panel-body">
+          <div class="file-item" style="opacity:0.5;">
+            <input type="checkbox" disabled>
+            <span>README.txt</span>
+            <span class="file-meta" style="color:var(--text-tertiary);">junk</span>
+          </div>
+          <div class="file-item">
+            <input type="checkbox" checked>
+            <span>Super Mario Bros (USA).nes</span>
+            <span class="file-meta">256 KB</span>
+          </div>
+          <div class="file-item">
+            <input type="checkbox" checked>
+            <span>Super Mario Bros 2 (USA).nes</span>
+            <span class="file-meta">384 KB</span>
+          </div>
+          <div class="file-item">
+            <input type="checkbox" checked>
+            <span>Super Mario Bros 3 (USA).nes</span>
+            <span class="file-meta">512 KB</span>
+          </div>
+          <div class="file-item">
+            <input type="checkbox" checked>
+            <span>Super Mario World (USA).sfc</span>
+            <span class="file-meta">1.0 MB</span>
+          </div>
+          <div class="file-item" style="opacity:0.5;">
+            <input type="checkbox" disabled>
+            <span>cover.jpg</span>
+            <span class="file-meta" style="color:var(--text-tertiary);">junk</span>
+          </div>
+          <div class="file-item" style="opacity:0.5;">
+            <input type="checkbox" disabled>
+            <span>nfo.txt</span>
+            <span class="file-meta" style="color:var(--text-tertiary);">junk</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Panel -->
+      <div class="panel">
+        <div class="panel-header">Actions</div>
+        <div class="panel-body" style="padding:14px;">
+          <div style="margin-bottom:12px;">
+            <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Platform</div>
+            <select class="platform-select">
+              <option>NES</option>
+              <option>SNES</option>
+              <option>Game Boy</option>
+              <option>GBA</option>
+              <option>N64</option>
+              <option>Genesis</option>
+              <option>PlayStation</option>
+              <option>PS2</option>
+              <option>GameCube</option>
+              <option>Wii</option>
+            </select>
+          </div>
+          <div style="margin-bottom:16px;">
+            <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Selected files</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary);">4 files &middot; 2.1 MB</div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-bottom:8px;">Process Selected</button>
+          <button class="btn btn-ghost" style="width:100%;">Skip Item</button>
+
+          <div style="margin-top:24px;border-top:1px solid var(--border-subtle);padding-top:14px;">
+            <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Recent History</div>
+            <table class="history-table">
+              <thead><tr><th>Item</th><th>Platform</th><th>Files</th></tr></thead>
+              <tbody>
+                <tr><td>Chrono Trigger.zip</td><td>SNES</td><td>1</td></tr>
+                <tr><td>FF7 (USA).7z</td><td>PSX</td><td>3</td></tr>
+                <tr><td>Kirby Pack.zip</td><td>GBA</td><td>4</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════ TDARR CLEANUP ════════════════════ -->
+  <div class="page" id="page-tdarr-cleanup">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Tdarr Cleanup</div>
+        <div class="page-subtitle">review and approve stuck file moves</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm">&#8635; Refresh</button>
+        <button class="btn btn-approve btn-sm">Approve All</button>
+      </div>
+    </div>
+
+    <div class="stuck-summary">
+      <div class="stuck-stat"><strong>12</strong> stuck files</div>
+      <div class="stuck-stat"><strong>0</strong> approved</div>
+      <div class="stuck-stat"><strong>0</strong> skipped</div>
+      <div style="margin-left:auto;font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono);">last scan: 4 min ago</div>
+    </div>
+
+    <div class="card" style="overflow-x:auto;">
+      <table class="stuck-table">
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Source</th>
+            <th>Size</th>
+            <th>Status</th>
+            <th>Health</th>
+            <th style="width:120px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Movie.Title.2024.2160p.mkv</td>
+            <td>arr-movies</td>
+            <td>8.2 GB</td>
+            <td style="color:var(--amber)">Not required</td>
+            <td style="color:var(--green)">&#10003; Success</td>
+            <td><div class="actions-cell"><button class="btn btn-approve btn-sm">Approve</button><button class="btn btn-skip btn-sm">Skip</button></div></td>
+          </tr>
+          <tr>
+            <td>Another.Movie.2023.1080p.mkv</td>
+            <td>arr-movies</td>
+            <td>4.1 GB</td>
+            <td style="color:var(--amber)">Not required</td>
+            <td style="color:var(--green)">&#10003; Success</td>
+            <td><div class="actions-cell"><button class="btn btn-approve btn-sm">Approve</button><button class="btn btn-skip btn-sm">Skip</button></div></td>
+          </tr>
+          <tr>
+            <td>TV.Show.S02E01.2160p.mkv</td>
+            <td>arr-tv</td>
+            <td>3.8 GB</td>
+            <td style="color:var(--amber)">Not required</td>
+            <td style="color:var(--green)">&#10003; Success</td>
+            <td><div class="actions-cell"><button class="btn btn-approve btn-sm">Approve</button><button class="btn btn-skip btn-sm">Skip</button></div></td>
+          </tr>
+          <tr>
+            <td>TV.Show.S02E02.2160p.mkv</td>
+            <td>arr-tv</td>
+            <td>3.6 GB</td>
+            <td style="color:var(--amber)">Not required</td>
+            <td style="color:var(--green)">&#10003; Success</td>
+            <td><div class="actions-cell"><button class="btn btn-approve btn-sm">Approve</button><button class="btn btn-skip btn-sm">Skip</button></div></td>
+          </tr>
+          <tr>
+            <td>TV.Show.S02E03.2160p.mkv</td>
+            <td>arr-tv</td>
+            <td>4.0 GB</td>
+            <td style="color:var(--amber)">Not required</td>
+            <td style="color:var(--green)">&#10003; Success</td>
+            <td><div class="actions-cell"><button class="btn btn-approve btn-sm">Approve</button><button class="btn btn-skip btn-sm">Skip</button></div></td>
+          </tr>
+          <tr>
+            <td>Classic.Film.1995.1080p.mkv</td>
+            <td>arr-movies</td>
+            <td>2.2 GB</td>
+            <td style="color:var(--amber)">Not required</td>
+            <td style="color:var(--green)">&#10003; Success</td>
+            <td><div class="actions-cell"><button class="btn btn-approve btn-sm">Approve</button><button class="btn btn-skip btn-sm">Skip</button></div></td>
+          </tr>
+          <tr>
+            <td>Documentary.2024.2160p.mkv</td>
+            <td>arr-movies</td>
+            <td>6.7 GB</td>
+            <td style="color:var(--amber)">Not required</td>
+            <td style="color:var(--green)">&#10003; Success</td>
+            <td><div class="actions-cell"><button class="btn btn-approve btn-sm">Approve</button><button class="btn btn-skip btn-sm">Skip</button></div></td>
+          </tr>
+          <tr>
+            <td>Anime.Show.S01E12.1080p.mkv</td>
+            <td>arr-tv</td>
+            <td>1.4 GB</td>
+            <td style="color:var(--amber)">Not required</td>
+            <td style="color:var(--green)">&#10003; Success</td>
+            <td><div class="actions-cell"><button class="btn btn-approve btn-sm">Approve</button><button class="btn btn-skip btn-sm">Skip</button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════════════════ DOWNLOADS (generic: data table + actions) ════════════════════ -->
+  <div class="page" id="page-downloads">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Downloads</div>
+        <div class="page-subtitle">qBittorrent &middot; auto-refresh 10s</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm">&#8635; Refresh</button>
+      </div>
+    </div>
+
+    <div class="stuck-summary">
+      <div class="stuck-stat"><strong>3</strong> downloading</div>
+      <div class="stuck-stat"><strong>2</strong> seeding</div>
+      <div class="stuck-stat"><strong>5</strong> total</div>
+      <div style="margin-left:auto;font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono);">&#8595; 42.1 MB/s &middot; &#8593; 3.2 MB/s</div>
+    </div>
+
+    <div class="card" style="overflow-x:auto;">
+      <table class="stuck-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th style="width:160px;">Progress</th>
+            <th>Speed</th>
+            <th>Status</th>
+            <th style="width:160px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--text-primary);font-family:var(--font-display);font-weight:400;">Movie.Title.2024.2160p.WEB-DL.DDP5.1.H.265</td>
+            <td>14.2 GB</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="metric-bar-wrap" style="flex:1;height:6px;"><div class="metric-bar mid" style="width:67%;"></div></div>
+                <span style="font-size:11px;color:var(--text-secondary);">67%</span>
+              </div>
+            </td>
+            <td style="color:var(--accent);">&#8595; 28.4 MB/s</td>
+            <td><span class="status-badge" style="background:var(--accent-glow);color:var(--accent);">downloading</span></td>
+            <td><div class="actions-cell"><button class="btn btn-skip btn-sm">Pause</button><button class="btn btn-sm" style="background:var(--red-dim);color:var(--red);border-color:transparent;">Delete</button></div></td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-primary);font-family:var(--font-display);font-weight:400;">TV.Show.S03E01-E04.1080p.AMZN.WEB-DL</td>
+            <td>8.6 GB</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="metric-bar-wrap" style="flex:1;height:6px;"><div class="metric-bar low" style="width:34%;"></div></div>
+                <span style="font-size:11px;color:var(--text-secondary);">34%</span>
+              </div>
+            </td>
+            <td style="color:var(--accent);">&#8595; 11.2 MB/s</td>
+            <td><span class="status-badge" style="background:var(--accent-glow);color:var(--accent);">downloading</span></td>
+            <td><div class="actions-cell"><button class="btn btn-skip btn-sm">Pause</button><button class="btn btn-sm" style="background:var(--red-dim);color:var(--red);border-color:transparent;">Delete</button></div></td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-primary);font-family:var(--font-display);font-weight:400;">Documentary.Nature.2024.2160p.NF.WEB-DL</td>
+            <td>6.1 GB</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="metric-bar-wrap" style="flex:1;height:6px;"><div class="metric-bar low" style="width:12%;"></div></div>
+                <span style="font-size:11px;color:var(--text-secondary);">12%</span>
+              </div>
+            </td>
+            <td style="color:var(--accent);">&#8595; 2.5 MB/s</td>
+            <td><span class="status-badge" style="background:var(--accent-glow);color:var(--accent);">downloading</span></td>
+            <td><div class="actions-cell"><button class="btn btn-skip btn-sm">Pause</button><button class="btn btn-sm" style="background:var(--red-dim);color:var(--red);border-color:transparent;">Delete</button></div></td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-primary);font-family:var(--font-display);font-weight:400;">Another.Movie.2023.1080p.BluRay.REMUX</td>
+            <td>22.4 GB</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="metric-bar-wrap" style="flex:1;height:6px;"><div class="metric-bar low" style="width:100%;background:var(--green);"></div></div>
+                <span style="font-size:11px;color:var(--green);">100%</span>
+              </div>
+            </td>
+            <td style="color:var(--text-tertiary);">&#8593; 2.1 MB/s</td>
+            <td><span class="status-badge" style="background:var(--green-dim);color:var(--green);">seeding</span></td>
+            <td><div class="actions-cell"><button class="btn btn-skip btn-sm">Pause</button><button class="btn btn-sm" style="background:var(--red-dim);color:var(--red);border-color:transparent;">Delete</button></div></td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-primary);font-family:var(--font-display);font-weight:400;">Classic.Film.Remastered.1995.2160p.UHD</td>
+            <td>18.7 GB</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="metric-bar-wrap" style="flex:1;height:6px;"><div class="metric-bar low" style="width:100%;background:var(--green);"></div></div>
+                <span style="font-size:11px;color:var(--green);">100%</span>
+              </div>
+            </td>
+            <td style="color:var(--text-tertiary);">&#8593; 1.1 MB/s</td>
+            <td><span class="status-badge" style="background:var(--green-dim);color:var(--green);">seeding</span></td>
+            <td><div class="actions-cell"><button class="btn btn-skip btn-sm">Pause</button><button class="btn btn-sm" style="background:var(--red-dim);color:var(--red);border-color:transparent;">Delete</button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:12px;padding:10px 14px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:11px;color:var(--text-tertiary);">&#9432;</span>
+      <span style="font-size:11px;color:var(--text-tertiary);">This page is rendered by the <strong style="color:var(--text-secondary);">generic screen template</strong> — no custom React code. Configured via settings UI.</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ TDARR QUEUE (generic: read-only table) ════════════════════ -->
+  <div class="page" id="page-tdarr-queue">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Tdarr Queue</div>
+        <div class="page-subtitle">transcoding pipeline &middot; auto-refresh 30s</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm">&#8635; Refresh</button>
+      </div>
+    </div>
+
+    <div class="stuck-summary">
+      <div class="stuck-stat"><strong>6</strong> in queue</div>
+      <div class="stuck-stat"><strong>2</strong> processing</div>
+      <div class="stuck-stat"><strong>4</strong> waiting</div>
+    </div>
+
+    <div class="card" style="overflow-x:auto;">
+      <table class="stuck-table">
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Codec</th>
+            <th>Size</th>
+            <th style="width:160px;">Progress</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--text-primary);">Movie.Action.2024/movie.mkv</td>
+            <td>H.264 → HEVC</td>
+            <td>12.4 GB</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="metric-bar-wrap" style="flex:1;height:6px;"><div class="metric-bar mid" style="width:72%;"></div></div>
+                <span style="font-size:11px;color:var(--text-secondary);">72%</span>
+              </div>
+            </td>
+            <td><span class="status-badge" style="background:var(--accent-glow);color:var(--accent);">transcoding</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-primary);">TV.Drama.S02E05/episode.mkv</td>
+            <td>H.264 → HEVC</td>
+            <td>3.8 GB</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="metric-bar-wrap" style="flex:1;height:6px;"><div class="metric-bar low" style="width:18%;"></div></div>
+                <span style="font-size:11px;color:var(--text-secondary);">18%</span>
+              </div>
+            </td>
+            <td><span class="status-badge" style="background:var(--accent-glow);color:var(--accent);">transcoding</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-primary);">Comedy.Special.2024/special.mkv</td>
+            <td>H.264 → HEVC</td>
+            <td>2.1 GB</td>
+            <td></td>
+            <td><span class="status-badge" style="background:var(--amber-dim);color:var(--amber);">queued</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-primary);">Anime.Movie.2023/movie.mkv</td>
+            <td>H.264 → HEVC</td>
+            <td>5.6 GB</td>
+            <td></td>
+            <td><span class="status-badge" style="background:var(--amber-dim);color:var(--amber);">queued</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-primary);">TV.Show.S01E01/episode.mkv</td>
+            <td>MPEG-2 → HEVC</td>
+            <td>4.2 GB</td>
+            <td></td>
+            <td><span class="status-badge" style="background:var(--amber-dim);color:var(--amber);">queued</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-primary);">Documentary.2024/doc.mkv</td>
+            <td>H.264 → HEVC</td>
+            <td>7.8 GB</td>
+            <td></td>
+            <td><span class="status-badge" style="background:var(--amber-dim);color:var(--amber);">queued</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:12px;padding:10px 14px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:11px;color:var(--text-tertiary);">&#9432;</span>
+      <span style="font-size:11px;color:var(--text-tertiary);">This page is rendered by the <strong style="color:var(--text-secondary);">generic screen template</strong> — read-only data table, no custom React code.</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ JELLYFIN (generic: action-only) ════════════════════ -->
+  <div class="page" id="page-jellyfin">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Jellyfin</div>
+        <div class="page-subtitle">library management actions</div>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:480px;">
+      <div class="card-header">
+        <div class="card-title">Refresh Libraries</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-primary" style="width:100%;padding:12px 16px;font-size:13px;">
+          &#8635; Refresh All Libraries
+        </button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+          <button class="btn btn-ghost" style="padding:10px 16px;">&#9654; Refresh Movies</button>
+          <button class="btn btn-ghost" style="padding:10px 16px;">&#9654; Refresh TV Shows</button>
+          <button class="btn btn-ghost" style="padding:10px 16px;">&#9654; Refresh Music</button>
+          <button class="btn btn-ghost" style="padding:10px 16px;">&#9654; Refresh Photos</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;max-width:480px;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Actions</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;">
+            <span style="font-size:12px;color:var(--text-secondary);">Refresh All Libraries</span>
+            <span style="font-size:11px;color:var(--green);font-family:var(--font-mono);">&#10003; success &middot; 2h ago</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid var(--border-subtle);">
+            <span style="font-size:12px;color:var(--text-secondary);">Refresh Movies</span>
+            <span style="font-size:11px;color:var(--green);font-family:var(--font-mono);">&#10003; success &middot; 1d ago</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid var(--border-subtle);">
+            <span style="font-size:12px;color:var(--text-secondary);">Refresh TV Shows</span>
+            <span style="font-size:11px;color:var(--green);font-family:var(--font-mono);">&#10003; success &middot; 3d ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;max-width:480px;padding:10px 14px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:11px;color:var(--text-tertiary);">&#9432;</span>
+      <span style="font-size:11px;color:var(--text-tertiary);">This page is rendered by the <strong style="color:var(--text-secondary);">generic screen template</strong> — action-only layout, no custom React code.</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SETTINGS ════════════════════ -->
+  <div class="page" id="page-settings">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Settings</div>
+        <div class="page-subtitle">configure SagoConsole</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:24px;max-width:900px;">
+      <!-- Settings Nav -->
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <div style="padding:8px 12px;border-radius:8px;background:var(--accent-glow);color:var(--accent);font-size:13px;font-weight:500;cursor:pointer;">Service Links</div>
+        <div style="padding:8px 12px;border-radius:8px;color:var(--text-secondary);font-size:13px;cursor:pointer;">Generic Screens</div>
+        <div style="padding:8px 12px;border-radius:8px;color:var(--text-secondary);font-size:13px;cursor:pointer;">Containers</div>
+        <div style="padding:8px 12px;border-radius:8px;color:var(--text-secondary);font-size:13px;cursor:pointer;">Alert Thresholds</div>
+      </div>
+
+      <!-- Settings Content -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Service Links</div>
+          <button class="btn btn-primary btn-sm">+ Add Link</button>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:8px;">Organize links into categories. Drag to reorder.</div>
+        </div>
+
+        <!-- Category -->
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg-card);border-radius:8px 8px 0 0;border:1px solid var(--border-subtle);">
+            <span style="font-size:12px;font-weight:600;color:var(--text-primary);">Media</span>
+            <span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">10 links</span>
+          </div>
+          <div style="border:1px solid var(--border-subtle);border-top:none;border-radius:0 0 8px 8px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border-subtle);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="color:var(--text-tertiary);cursor:grab;">&#9776;</span>
+                <span style="font-size:12px;color:var(--text-primary);">Jellyfin</span>
+                <span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">jelly.sagocactus.com</span>
+              </div>
+              <div style="display:flex;gap:4px;">
+                <button class="btn btn-ghost btn-sm" style="padding:2px 6px;font-size:10px;">Edit</button>
+                <button class="btn btn-sm" style="padding:2px 6px;font-size:10px;color:var(--red);background:transparent;border-color:transparent;">Delete</button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border-subtle);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="color:var(--text-tertiary);cursor:grab;">&#9776;</span>
+                <span style="font-size:12px;color:var(--text-primary);">Radarr</span>
+                <span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">radarr.sagocactus.com</span>
+              </div>
+              <div style="display:flex;gap:4px;">
+                <button class="btn btn-ghost btn-sm" style="padding:2px 6px;font-size:10px;">Edit</button>
+                <button class="btn btn-sm" style="padding:2px 6px;font-size:10px;color:var(--red);background:transparent;border-color:transparent;">Delete</button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="color:var(--text-tertiary);cursor:grab;">&#9776;</span>
+                <span style="font-size:12px;color:var(--text-primary);">Sonarr</span>
+                <span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">sonarr.sagocactus.com</span>
+              </div>
+              <div style="display:flex;gap:4px;">
+                <button class="btn btn-ghost btn-sm" style="padding:2px 6px;font-size:10px;">Edit</button>
+                <button class="btn btn-sm" style="padding:2px 6px;font-size:10px;color:var(--red);background:transparent;border-color:transparent;">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg-card);border-radius:8px;border:1px solid var(--border-subtle);">
+          <span style="font-size:12px;font-weight:600;color:var(--text-primary);">Infrastructure</span>
+          <span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">12 links</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function switchPage(pageId) {
+  const currentPage = document.querySelector('.page.active');
+  const nextPage = document.getElementById('page-' + pageId);
+  if (currentPage === nextPage) return;
+
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector('[data-page="' + pageId + '"]').classList.add('active');
+
+  if (currentPage) {
+    currentPage.style.opacity = '0';
+    setTimeout(() => {
+      currentPage.classList.remove('active');
+      currentPage.style.opacity = '';
+      nextPage.classList.add('active');
+      requestAnimationFrame(() => { nextPage.style.opacity = '1'; });
+    }, 200);
+  } else {
+    nextPage.classList.add('active');
+    nextPage.style.opacity = '1';
+  }
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => switchPage(item.dataset.page));
+});
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

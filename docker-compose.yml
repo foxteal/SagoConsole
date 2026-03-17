@@ -1,0 +1,28 @@
+services:
+  sagoconsole:
+    build: .
+    container_name: sagoconsole
+    restart: unless-stopped
+    ports:
+      - "8120:8120"
+    environment:
+      - TZ=America/Los_Angeles
+      - NODE_ENV=production
+    env_file:
+      - .env
+    volumes:
+      - /docker-storage/services/sagoconsole/data:/data
+    networks:
+      - monitoring_net
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8120/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "com.centurylinklabs.watchtower.monitor-only=true"
+
+networks:
+  monitoring_net:
+    external: true

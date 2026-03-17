@@ -1,0 +1,25 @@
+{
+  "name": "sagoconsole",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build:server": "tsc",
+    "build:client": "cd client && npm run build",
+    "build": "npm run build:server && npm run build:client",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"tsc --watch\" \"node --watch dist/index.js\" \"cd client && npm run dev\""
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "jose": "^6.0.11"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/express": "^5.0.1",
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}
