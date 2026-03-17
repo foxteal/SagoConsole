@@ -151,6 +151,10 @@ export default function Sidebar() {
             label={screen.name}
           />
         ))}
+        {/* Settings pinned to bottom */}
+        <div className="mt-auto pt-2">
+          <NavItem to="/settings" icon="settings" label="Settings" />
+        </div>
       </nav>
 
       {/* User footer */}

@@ -184,6 +184,45 @@ const screens: ScreenSeed[] = [
   },
 ];
 
+const CATEGORY_ORDER = ["AI", "Media", "Gaming", "Productivity", "Projects", "Obsidian", "Monitoring", "Infrastructure"];
+
+export function seedLinkCategories(db: Database.Database): void {
+  const count = db.prepare("SELECT COUNT(*) as count FROM link_categories").get() as { count: number };
+  if (count.count > 0) return;
+
+  const insert = db.prepare("INSERT INTO link_categories (name, sort_order) VALUES (?, ?)");
+  const tx = db.transaction(() => {
+    CATEGORY_ORDER.forEach((name, i) => insert.run(name, i));
+  });
+  tx();
+  console.log(`Seeded ${CATEGORY_ORDER.length} link categories`);
+}
+
+const SERVERS = ["Fideo", "Ava", "Kai", "VPS"];
+const DEFAULT_THRESHOLDS = [
+  { metric: "cpu", warning_value: 80, critical_value: 95 },
+  { metric: "memory", warning_value: 85, critical_value: 95 },
+  { metric: "disk", warning_value: 75, critical_value: 90 },
+];
+
+export function seedAlertThresholds(db: Database.Database): void {
+  const count = db.prepare("SELECT COUNT(*) as count FROM alert_thresholds").get() as { count: number };
+  if (count.count > 0) return;
+
+  const insert = db.prepare(
+    "INSERT INTO alert_thresholds (server, metric, warning_value, critical_value) VALUES (?, ?, ?, ?)"
+  );
+  const tx = db.transaction(() => {
+    for (const server of SERVERS) {
+      for (const t of DEFAULT_THRESHOLDS) {
+        insert.run(server, t.metric, t.warning_value, t.critical_value);
+      }
+    }
+  });
+  tx();
+  console.log(`Seeded alert thresholds for ${SERVERS.length} servers`);
+}
+
 export function seedScreens(db: Database.Database): void {
   const count = db.prepare("SELECT COUNT(*) as count FROM screens").get() as { count: number };
   if (count.count > 0) return;

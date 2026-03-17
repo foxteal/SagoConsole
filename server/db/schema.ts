@@ -47,5 +47,30 @@ export function createTables(db: Database.Database): void {
       global_actions TEXT NOT NULL DEFAULT '[]',
       sort_order INTEGER NOT NULL DEFAULT 0
     );
+
+    CREATE TABLE IF NOT EXISTS link_categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS container_prefs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      server TEXT NOT NULL,
+      project_name TEXT NOT NULL,
+      display_name TEXT,
+      hidden INTEGER NOT NULL DEFAULT 0,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      UNIQUE(server, project_name)
+    );
+
+    CREATE TABLE IF NOT EXISTS alert_thresholds (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      server TEXT NOT NULL,
+      metric TEXT NOT NULL,
+      warning_value REAL,
+      critical_value REAL,
+      UNIQUE(server, metric)
+    );
   `);
 }

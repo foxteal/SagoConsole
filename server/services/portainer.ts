@@ -1,4 +1,5 @@
 import { config } from "../config";
+import { getDb } from "../db";
 
 interface PortainerContainer {
   Names: string[];
@@ -89,7 +90,50 @@ async function fetchContainers(endpoint: EndpointDef): Promise<ServerContainers>
   };
 }
 
+interface ContainerPrefRow {
+  server: string;
+  project_name: string;
+  display_name: string | null;
+  hidden: number;
+  sort_order: number;
+}
+
 export async function getAllContainers(): Promise<ServerContainers[]> {
   const results = await Promise.all(ENDPOINTS.map(fetchContainers));
-  return results;
+
+  // Apply container prefs
+  const db = getDb();
+  const prefs = db.prepare("SELECT * FROM container_prefs").all() as ContainerPrefRow[];
+  const prefMap = new Map<string, ContainerPrefRow>();
+  for (const p of prefs) {
+    prefMap.set(`${p.server}::${p.project_name}`, p);
+  }
+
+  return results.map((server) => {
+    // Filter hidden projects and apply display names
+    const filteredProjects = server.projects
+      .filter((proj) => {
+        const pref = prefMap.get(`${server.server}::${proj.name}`);
+        return !pref || pref.hidden !== 1;
+      })
+      .map((proj) => {
+        const pref = prefMap.get(`${server.server}::${proj.name}`);
+        return {
+          ...proj,
+          displayName: pref?.display_name || proj.name,
+          sortOrder: pref?.sort_order ?? 0,
+        };
+      })
+      .sort((a, b) => a.sortOrder - b.sortOrder || a.displayName.localeCompare(b.displayName));
+
+    // Recount after filtering
+    const visibleContainers = filteredProjects.flatMap((p) => p.containers);
+    return {
+      ...server,
+      total: visibleContainers.length,
+      running: visibleContainers.filter((c) => c.state === "running").length,
+      containers: visibleContainers,
+      projects: filteredProjects,
+    };
+  });
 }

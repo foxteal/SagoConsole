@@ -64,4 +64,71 @@ router.get("/api/screens/:slug", (req, res) => {
   }
 });
 
+// POST /api/screens — create screen
+router.post("/api/screens", (req, res) => {
+  try {
+    const { slug, name, icon, type, api_source, refresh_seconds, summary_template, columns, row_actions, global_actions, sort_order } = req.body;
+    if (!slug || !name || !api_source) {
+      res.status(400).json({ error: "slug, name, and api_source are required" });
+      return;
+    }
+    const db = getDb();
+    const result = db.prepare(
+      `INSERT INTO screens (slug, name, icon, type, api_source, refresh_seconds, summary_template, columns, row_actions, global_actions, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).run(
+      slug, name, icon || "grid", type || "data-table", api_source,
+      refresh_seconds ?? 30, summary_template || null,
+      JSON.stringify(columns || []), JSON.stringify(row_actions || []), JSON.stringify(global_actions || []),
+      sort_order ?? 0
+    );
+    res.json({ id: result.lastInsertRowid });
+  } catch (err) {
+    console.error("Create screen error:", err);
+    res.status(500).json({ error: "Failed to create screen" });
+  }
+});
+
+// PUT /api/screens/:slug — update screen
+router.put("/api/screens/:slug", (req, res) => {
+  try {
+    const { name, icon, type, api_source, refresh_seconds, summary_template, columns, row_actions, global_actions, sort_order } = req.body;
+    const db = getDb();
+    const result = db.prepare(
+      `UPDATE screens SET name = ?, icon = ?, type = ?, api_source = ?, refresh_seconds = ?,
+       summary_template = ?, columns = ?, row_actions = ?, global_actions = ?, sort_order = ?
+       WHERE slug = ?`
+    ).run(
+      name, icon || "grid", type || "data-table", api_source,
+      refresh_seconds ?? 30, summary_template || null,
+      JSON.stringify(columns || []), JSON.stringify(row_actions || []), JSON.stringify(global_actions || []),
+      sort_order ?? 0, req.params.slug
+    );
+    if (result.changes === 0) {
+      res.status(404).json({ error: "Screen not found" });
+      return;
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Update screen error:", err);
+    res.status(500).json({ error: "Failed to update screen" });
+  }
+});
+
+// DELETE /api/screens/:slug — delete screen
+router.delete("/api/screens/:slug", (req, res) => {
+  try {
+    const db = getDb();
+    const result = db.prepare("DELETE FROM screens WHERE slug = ?").run(req.params.slug);
+    if (result.changes === 0) {
+      res.status(404).json({ error: "Screen not found" });
+      return;
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Delete screen error:", err);
+    res.status(500).json({ error: "Failed to delete screen" });
+  }
+});
+
 export default router;
