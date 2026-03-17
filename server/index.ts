@@ -7,6 +7,7 @@ import { authMiddleware } from "./middleware/auth";
 import healthRouter from "./routes/health";
 import authRouter from "./routes/auth";
 import linksRouter from "./routes/links";
+import metricsRouter from "./routes/metrics";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(authMiddleware);
 app.use(healthRouter);
 app.use(authRouter);
 app.use(linksRouter);
+app.use(metricsRouter);
 
 // Static files (built client)
 const clientDist = path.join(__dirname, "..", "client", "dist");
