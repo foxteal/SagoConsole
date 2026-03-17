@@ -101,30 +101,6 @@ interface ScreenSeed {
 
 const screens: ScreenSeed[] = [
   {
-    slug: "tdarr-cleanup",
-    name: "Tdarr Cleanup",
-    icon: "film",
-    type: "data-table",
-    api_source: "/api/proxy/tdarr-cleanup",
-    refresh_seconds: 30,
-    summary_template: "{total} stuck files, {approved} approved, {skipped} skipped",
-    columns: JSON.stringify([
-      { key: "file", label: "File", type: "text" },
-      { key: "source", label: "Source", type: "text" },
-      { key: "size", label: "Size", type: "filesize" },
-      { key: "status", label: "Status", type: "badge", badgeMap: { pending: "amber", approved: "green", skipped: "text-tertiary", error: "red" } },
-      { key: "health", label: "Health", type: "badge", badgeMap: { healthy: "green", unhealthy: "red", unknown: "text-tertiary" } },
-    ]),
-    row_actions: JSON.stringify([
-      { id: "approve", label: "Approve", method: "POST", url: "/api/proxy/tdarr-cleanup/action/approve/{id}" },
-      { id: "skip", label: "Skip", method: "POST", url: "/api/proxy/tdarr-cleanup/action/skip/{id}" },
-    ]),
-    global_actions: JSON.stringify([
-      { id: "approve-all", label: "Approve All", method: "POST", url: "/api/proxy/tdarr-cleanup/action/approve-all", confirm: true },
-    ]),
-    sort_order: 0,
-  },
-  {
     slug: "downloads",
     name: "Downloads",
     icon: "download",
@@ -224,6 +200,9 @@ export function seedAlertThresholds(db: Database.Database): void {
 }
 
 export function seedScreens(db: Database.Database): void {
+  // Remove tdarr-cleanup from generic screens — now a custom screen
+  db.prepare("DELETE FROM screens WHERE slug = 'tdarr-cleanup'").run();
+
   const count = db.prepare("SELECT COUNT(*) as count FROM screens").get() as { count: number };
   if (count.count > 0) return;
 

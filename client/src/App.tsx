@@ -7,6 +7,7 @@ import ServicesPage from "./pages/ServicesPage";
 import AlertsPage from "./pages/AlertsPage";
 import GenericScreen from "./pages/GenericScreen";
 import RommSorterPage from "./pages/RommSorterPage";
+import TdarrCleanupPage from "./pages/TdarrCleanupPage";
 import SettingsPage from "./pages/SettingsPage";
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="alerts" element={<AlertsPage />} />
         <Route path="screens/:slug" element={<GenericScreen />} />
         <Route path="romm-sorter" element={<RommSorterPage />} />
+        <Route path="tdarr-cleanup" element={<TdarrCleanupPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
     </Routes>

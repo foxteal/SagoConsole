@@ -12,6 +12,13 @@ services:
       - .env
     volumes:
       - /docker-storage/services/sagoconsole/data:/data
+      # Tdarr cleanup: source (NVMe processing) and output (DAS media)
+      - /docker-storage/processing/arr-tv:/tdarr-source/arr-tv
+      - /docker-storage/processing/arr-movies:/tdarr-source/arr-movies
+      - /docker-storage/processing/arr-adult:/tdarr-source/arr-adult
+      - /nas/media/arr-tv:/tdarr-output/arr-tv
+      - /nas/media/arr-movies:/tdarr-output/arr-movies
+      - /nas/media/arr-adult:/tdarr-output/arr-adult
     extra_hosts:
       - "host.docker.internal:172.16.0.1"
     networks:

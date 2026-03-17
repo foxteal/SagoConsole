@@ -14,6 +14,7 @@ import updatesRouter from "./routes/updates";
 import screensRouter from "./routes/screens";
 import proxyRouter from "./routes/proxy";
 import rommSorterRouter from "./routes/romm-sorter";
+import tdarrCleanupRouter from "./routes/tdarr-cleanup";
 import thresholdsRouter from "./routes/thresholds";
 import { pollAlerts } from "./services/alerts";
 
@@ -34,6 +35,7 @@ app.use(updatesRouter);
 app.use(screensRouter);
 app.use(proxyRouter);
 app.use(rommSorterRouter);
+app.use(tdarrCleanupRouter);
 app.use(thresholdsRouter);
 
 // Static files (built client)
