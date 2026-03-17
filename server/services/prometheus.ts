@@ -62,6 +62,13 @@ const SERVERS: ServerDef[] = [
       { mountpoint: "/", label: "OS" },
     ],
   },
+  {
+    name: "VPS",
+    instance: "vps",
+    drives: [
+      { mountpoint: "/", label: "OS" },
+    ],
+  },
 ];
 
 export interface DriveMetrics {

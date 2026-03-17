@@ -20,6 +20,7 @@ export interface TdarrFile {
   transcodeStatus: string;
   healthCheck: string;
   size: number;
+  arrivedAt: string | null;
   recommendedAction: "move" | "reprocess" | "none";
   activeWorker: boolean;
 }
@@ -106,6 +107,15 @@ async function getAllTdarrFiles(): Promise<TdarrDbEntry[]> {
   return Object.values(data);
 }
 
+function getFolderMtime(folderPath: string): string | null {
+  try {
+    const stat = fs.statSync(folderPath);
+    return stat.mtime.toISOString();
+  } catch {
+    return null;
+  }
+}
+
 function getFileSize(filePath: string): number {
   try {
     const stat = fs.statSync(filePath);
@@ -186,6 +196,9 @@ export async function fetchFiles(): Promise<TdarrFile[]> {
     // Only show actionable files (skip files with no recommended action unless active)
     if (recommendedAction === "none" && !isActive) continue;
 
+    const folderPath = path.join(SOURCE_BASE, library, folder);
+    const arrivedAt = getFolderMtime(folderPath);
+
     results.push({
       id: filePath,
       file: relPath,
@@ -195,6 +208,7 @@ export async function fetchFiles(): Promise<TdarrFile[]> {
       transcodeStatus,
       healthCheck,
       size: getFileSize(containerPath),
+      arrivedAt,
       recommendedAction,
       activeWorker: isActive,
     });

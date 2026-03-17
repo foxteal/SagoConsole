@@ -10,6 +10,7 @@ interface TdarrFile {
   transcodeStatus: string;
   healthCheck: string;
   size: number;
+  arrivedAt: string | null;
   recommendedAction: "move" | "reprocess" | "none";
   activeWorker: boolean;
 }
@@ -37,13 +38,13 @@ function formatSize(bytes: number): string {
 }
 
 function formatDate(iso: string): string {
-  const d = new Date(iso + "Z");
+  const d = new Date(iso);
   return d.toLocaleString("en-US", {
     month: "short",
     day: "numeric",
-    hour: "numeric",
+    hour: "2-digit",
     minute: "2-digit",
-    hour12: true,
+    hour12: false,
   });
 }
 
@@ -138,6 +139,7 @@ function FileTable({
                 <th className="text-left px-4 py-2.5 w-24">Library</th>
                 <th className="text-left px-4 py-2.5 w-32">Status</th>
                 <th className="text-right px-4 py-2.5 w-24">Size</th>
+                <th className="text-left px-4 py-2.5 w-36">Arrived</th>
                 <th className="text-left px-4 py-2.5 w-28">Recommended</th>
                 <th className="text-right px-4 py-2.5 w-56">Actions</th>
               </tr>
@@ -178,6 +180,11 @@ function FileTable({
                     <td className="px-4 py-2.5 text-right">
                       <span className="text-xs font-mono text-text-tertiary">
                         {formatSize(file.size)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <span className="text-xs font-mono text-text-tertiary">
+                        {file.arrivedAt ? formatDate(file.arrivedAt) : "—"}
                       </span>
                     </td>
                     <td className="px-4 py-2.5">
