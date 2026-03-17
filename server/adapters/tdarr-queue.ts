@@ -10,12 +10,13 @@ export class TdarrQueueAdapter implements Adapter {
       if (!res.ok) throw new Error(`Tdarr API: ${res.status}`);
 
       const nodes = await res.json() as Record<string, {
-        workers?: Array<{
-          id: string;
+        workers?: Record<string, {
+          _id: string;
           file: string;
           percentage: number;
           status: string;
-          codec?: string;
+          lastPluginDetails?: { id?: string };
+          CLIType?: string;
         }>;
       }>;
 
@@ -24,26 +25,28 @@ export class TdarrQueueAdapter implements Adapter {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          start: 0,
-          pageSize: 50,
-          filters: [],
-          sorts: [],
-          opts: { table: "queue" },
+          data: {
+            start: 0,
+            pageSize: 50,
+            filters: [],
+            sorts: [],
+            opts: { table: "table1" },
+          },
         }),
       });
 
       const rows: ScreenData["rows"] = [];
 
-      // Add active workers
+      // Add active workers (workers is an object keyed by worker name)
       for (const node of Object.values(nodes)) {
         if (node.workers) {
-          for (const w of node.workers) {
+          for (const w of Object.values(node.workers)) {
             rows.push({
-              id: w.id,
+              id: w._id,
               file: w.file?.split("/").pop() || w.file || "unknown",
               status: "transcoding",
               progress: Math.round(w.percentage || 0),
-              codec: w.codec || "",
+              codec: w.CLIType || "",
             });
           }
         }
