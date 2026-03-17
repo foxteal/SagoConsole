@@ -114,9 +114,7 @@ export default function Sidebar() {
     <aside className="w-60 min-w-[240px] bg-bg-base border-r border-border-subtle flex flex-col">
       {/* Logo */}
       <div className="px-5 py-5 pb-4 border-b border-border-subtle flex items-center gap-2.5">
-        <div className="w-7 h-7 rounded-md bg-gradient-to-br from-accent to-accent-dim flex items-center justify-center font-mono font-semibold text-[13px] text-bg-deep shadow-[0_0_12px_rgba(45,212,191,0.25)]">
-          S
-        </div>
+        <img src="/logo.png" alt="SagoConsole" className="w-7 h-7 rounded-md" />
         <div>
           <div className="font-semibold text-[15px] tracking-wide text-text-primary">SagoConsole</div>
           <div className="text-xs text-text-tertiary tracking-[1.5px] uppercase mt-px">homelab</div>

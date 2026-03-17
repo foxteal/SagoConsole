@@ -42,9 +42,7 @@ export default function LoginPage() {
     <div className="flex items-center justify-center h-screen bg-bg-deep">
       <div className="text-center">
         <div className="mb-6">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent to-accent-dim flex items-center justify-center font-mono font-semibold text-2xl text-bg-deep shadow-[0_0_24px_rgba(45,212,191,0.25)] mx-auto mb-4">
-            S
-          </div>
+          <img src="/logo.png" alt="SagoConsole" className="w-14 h-14 rounded-xl mx-auto mb-4" />
           <h1 className="text-2xl font-semibold tracking-tight text-text-primary">SagoConsole</h1>
           <p className="text-sm text-text-tertiary mt-1">Homelab Dashboard</p>
         </div>
