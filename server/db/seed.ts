@@ -84,3 +84,121 @@ export function seedLinks(db: Database.Database): void {
   tx();
   console.log(`Seeded ${links.length} service links`);
 }
+
+interface ScreenSeed {
+  slug: string;
+  name: string;
+  icon: string;
+  type: string;
+  api_source: string;
+  refresh_seconds: number;
+  summary_template: string | null;
+  columns: string;
+  row_actions: string;
+  global_actions: string;
+  sort_order: number;
+}
+
+const screens: ScreenSeed[] = [
+  {
+    slug: "tdarr-cleanup",
+    name: "Tdarr Cleanup",
+    icon: "film",
+    type: "data-table",
+    api_source: "/api/proxy/tdarr-cleanup",
+    refresh_seconds: 30,
+    summary_template: "{total} stuck files, {approved} approved, {skipped} skipped",
+    columns: JSON.stringify([
+      { key: "file", label: "File", type: "text" },
+      { key: "source", label: "Source", type: "text" },
+      { key: "size", label: "Size", type: "filesize" },
+      { key: "status", label: "Status", type: "badge", badgeMap: { pending: "amber", approved: "green", skipped: "text-tertiary", error: "red" } },
+      { key: "health", label: "Health", type: "badge", badgeMap: { healthy: "green", unhealthy: "red", unknown: "text-tertiary" } },
+    ]),
+    row_actions: JSON.stringify([
+      { id: "approve", label: "Approve", method: "POST", url: "/api/proxy/tdarr-cleanup/action/approve/{id}" },
+      { id: "skip", label: "Skip", method: "POST", url: "/api/proxy/tdarr-cleanup/action/skip/{id}" },
+    ]),
+    global_actions: JSON.stringify([
+      { id: "approve-all", label: "Approve All", method: "POST", url: "/api/proxy/tdarr-cleanup/action/approve-all", confirm: true },
+    ]),
+    sort_order: 0,
+  },
+  {
+    slug: "downloads",
+    name: "Downloads",
+    icon: "download",
+    type: "data-table",
+    api_source: "/api/proxy/qbittorrent",
+    refresh_seconds: 10,
+    summary_template: "{active} downloading, {total} total",
+    columns: JSON.stringify([
+      { key: "name", label: "Name", type: "text" },
+      { key: "size", label: "Size", type: "filesize" },
+      { key: "progress", label: "Progress", type: "progress" },
+      { key: "speed", label: "Speed", type: "text" },
+      { key: "status", label: "Status", type: "badge", badgeMap: { downloading: "accent", seeding: "green", paused: "amber", stalled: "red", queued: "text-secondary" } },
+    ]),
+    row_actions: JSON.stringify([
+      { id: "pause", label: "Pause", method: "POST", url: "/api/proxy/qbittorrent/action/pause/{id}" },
+      { id: "resume", label: "Resume", method: "POST", url: "/api/proxy/qbittorrent/action/resume/{id}" },
+      { id: "delete", label: "Delete", method: "POST", url: "/api/proxy/qbittorrent/action/delete/{id}", confirm: true },
+    ]),
+    global_actions: JSON.stringify([]),
+    sort_order: 1,
+  },
+  {
+    slug: "tdarr-queue",
+    name: "Tdarr Queue",
+    icon: "queue",
+    type: "data-table",
+    api_source: "/api/proxy/tdarr-queue",
+    refresh_seconds: 30,
+    summary_template: "{count} items in queue",
+    columns: JSON.stringify([
+      { key: "file", label: "File", type: "text" },
+      { key: "status", label: "Status", type: "badge", badgeMap: { transcoding: "accent", queued: "amber", error: "red", success: "green" } },
+      { key: "progress", label: "Progress", type: "progress" },
+      { key: "codec", label: "Codec", type: "text" },
+    ]),
+    row_actions: JSON.stringify([]),
+    global_actions: JSON.stringify([]),
+    sort_order: 2,
+  },
+  {
+    slug: "jellyfin",
+    name: "Jellyfin",
+    icon: "play",
+    type: "action-only",
+    api_source: "/api/proxy/jellyfin",
+    refresh_seconds: 0,
+    summary_template: null,
+    columns: JSON.stringify([]),
+    row_actions: JSON.stringify([]),
+    global_actions: JSON.stringify([
+      { id: "refresh-movies", label: "Refresh Movies", method: "POST", url: "/api/proxy/jellyfin/action/refresh-movies" },
+      { id: "refresh-tv", label: "Refresh TV", method: "POST", url: "/api/proxy/jellyfin/action/refresh-tv" },
+      { id: "refresh-all", label: "Refresh All", method: "POST", url: "/api/proxy/jellyfin/action/refresh-all" },
+    ]),
+    sort_order: 3,
+  },
+];
+
+export function seedScreens(db: Database.Database): void {
+  const count = db.prepare("SELECT COUNT(*) as count FROM screens").get() as { count: number };
+  if (count.count > 0) return;
+
+  const insert = db.prepare(
+    `INSERT INTO screens (slug, name, icon, type, api_source, refresh_seconds, summary_template, columns, row_actions, global_actions, sort_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  );
+
+  const tx = db.transaction(() => {
+    for (const s of screens) {
+      insert.run(s.slug, s.name, s.icon, s.type, s.api_source, s.refresh_seconds, s.summary_template, s.columns, s.row_actions, s.global_actions, s.sort_order);
+    }
+  });
+
+  tx();
+  console.log(`Seeded ${screens.length} screens`);
+}

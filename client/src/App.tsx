@@ -5,6 +5,7 @@ import AuthCallback from "./auth/AuthCallback";
 import DashboardPage from "./pages/DashboardPage";
 import ServicesPage from "./pages/ServicesPage";
 import AlertsPage from "./pages/AlertsPage";
+import GenericScreen from "./pages/GenericScreen";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route index element={<DashboardPage />} />
         <Route path="services" element={<ServicesPage />} />
         <Route path="alerts" element={<AlertsPage />} />
+        <Route path="screens/:slug" element={<GenericScreen />} />
       </Route>
     </Routes>
   );

@@ -11,6 +11,8 @@ import metricsRouter from "./routes/metrics";
 import containersRouter from "./routes/containers";
 import alertsRouter from "./routes/alerts";
 import updatesRouter from "./routes/updates";
+import screensRouter from "./routes/screens";
+import proxyRouter from "./routes/proxy";
 import { pollAlerts } from "./services/alerts";
 
 const app = express();
@@ -27,6 +29,8 @@ app.use(metricsRouter);
 app.use(containersRouter);
 app.use(alertsRouter);
 app.use(updatesRouter);
+app.use(screensRouter);
+app.use(proxyRouter);
 
 // Static files (built client)
 const clientDist = path.join(__dirname, "..", "client", "dist");

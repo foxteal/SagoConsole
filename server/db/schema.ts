@@ -32,5 +32,20 @@ export function createTables(db: Database.Database): void {
 
     CREATE INDEX IF NOT EXISTS idx_alerts_fired_at ON alerts(fired_at);
     CREATE INDEX IF NOT EXISTS idx_alerts_resolved_at ON alerts(resolved_at);
+
+    CREATE TABLE IF NOT EXISTS screens (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL,
+      icon TEXT NOT NULL DEFAULT 'grid',
+      type TEXT NOT NULL DEFAULT 'data-table',
+      api_source TEXT NOT NULL,
+      refresh_seconds INTEGER NOT NULL DEFAULT 30,
+      summary_template TEXT,
+      columns TEXT NOT NULL DEFAULT '[]',
+      row_actions TEXT NOT NULL DEFAULT '[]',
+      global_actions TEXT NOT NULL DEFAULT '[]',
+      sort_order INTEGER NOT NULL DEFAULT 0
+    );
   `);
 }
