@@ -1,15 +1,19 @@
 import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
+import { apiClient } from "../../api/client";
 
 const navItems = [
   { label: "Dashboard", path: "/", icon: "grid" },
   { label: "Services", path: "/services", icon: "link" },
+  { label: "Alerts", path: "/alerts", icon: "alert" },
 ];
 
 function NavIcon({ icon }: { icon: string }) {
   const icons: Record<string, string> = {
     grid: "M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z",
     link: "M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14",
+    alert: "M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z",
     settings: "M12 8a4 4 0 100 8 4 4 0 000-8z",
   };
 
@@ -22,6 +26,25 @@ function NavIcon({ icon }: { icon: string }) {
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
+  const [alertCount, setAlertCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await apiClient("/api/alerts/active");
+        if (res.ok) {
+          const data = await res.json();
+          setAlertCount(data.count);
+        }
+      } catch {
+        // silent
+      }
+    };
+
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <aside className="w-60 min-w-[240px] bg-bg-base border-r border-border-subtle flex flex-col">
@@ -61,6 +84,11 @@ export default function Sidebar() {
                 )}
                 <NavIcon icon={item.icon} />
                 {item.label}
+                {item.label === "Alerts" && alertCount > 0 && (
+                  <span className="ml-auto bg-red-dim text-red text-[10px] font-semibold font-mono px-1.5 py-px rounded-lg">
+                    {alertCount}
+                  </span>
+                )}
               </>
             )}
           </NavLink>

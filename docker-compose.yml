@@ -12,6 +12,8 @@ services:
       - .env
     volumes:
       - /docker-storage/services/sagoconsole/data:/data
+    extra_hosts:
+      - "host.docker.internal:172.16.0.1"
     networks:
       - monitoring_net
     healthcheck:

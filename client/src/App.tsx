@@ -4,6 +4,7 @@ import LoginPage from "./auth/LoginPage";
 import AuthCallback from "./auth/AuthCallback";
 import DashboardPage from "./pages/DashboardPage";
 import ServicesPage from "./pages/ServicesPage";
+import AlertsPage from "./pages/AlertsPage";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="services" element={<ServicesPage />} />
+        <Route path="alerts" element={<AlertsPage />} />
       </Route>
     </Routes>
   );

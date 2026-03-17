@@ -9,6 +9,9 @@ import authRouter from "./routes/auth";
 import linksRouter from "./routes/links";
 import metricsRouter from "./routes/metrics";
 import containersRouter from "./routes/containers";
+import alertsRouter from "./routes/alerts";
+import updatesRouter from "./routes/updates";
+import { pollAlerts } from "./services/alerts";
 
 const app = express();
 
@@ -22,6 +25,8 @@ app.use(authRouter);
 app.use(linksRouter);
 app.use(metricsRouter);
 app.use(containersRouter);
+app.use(alertsRouter);
+app.use(updatesRouter);
 
 // Static files (built client)
 const clientDist = path.join(__dirname, "..", "client", "dist");
@@ -34,6 +39,12 @@ app.get("*", (_req, res) => {
 
 // Initialize database on startup
 getDb();
+
+// Start alert polling (every 60s)
+pollAlerts().catch((err) => console.error("Initial alert poll failed:", err));
+setInterval(() => {
+  pollAlerts().catch((err) => console.error("Alert poll failed:", err));
+}, 60000);
 
 app.listen(config.port, () => {
   console.log(`SagoConsole listening on port ${config.port}`);

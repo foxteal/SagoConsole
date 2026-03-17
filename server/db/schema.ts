@@ -18,5 +18,19 @@ export function createTables(db: Database.Database): void {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       last_login TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS alerts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      source TEXT NOT NULL,
+      severity TEXT NOT NULL,
+      message TEXT NOT NULL,
+      details TEXT,
+      fired_at TEXT NOT NULL,
+      resolved_at TEXT,
+      fingerprint TEXT UNIQUE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_alerts_fired_at ON alerts(fired_at);
+    CREATE INDEX IF NOT EXISTS idx_alerts_resolved_at ON alerts(resolved_at);
   `);
 }

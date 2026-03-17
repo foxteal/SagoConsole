@@ -2,6 +2,8 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { apiClient } from "../api/client";
 import ServerCard from "../components/dashboard/ServerCard";
 import ContainerGrid from "../components/dashboard/ContainerGrid";
+import UpdatesWidget from "../components/dashboard/UpdatesWidget";
+import AlertsWidget from "../components/dashboard/AlertsWidget";
 
 interface Drive {
   label: string;
@@ -112,7 +114,13 @@ export default function DashboardPage() {
           <ServerCard key={server.instance} server={server} />
         ))}
       </div>
-      {containerServers.length > 0 && <ContainerGrid servers={containerServers} />}
+      <div className="grid grid-cols-[1fr_340px] gap-4 max-[900px]:grid-cols-1">
+        {containerServers.length > 0 && <ContainerGrid servers={containerServers} />}
+        <div>
+          <UpdatesWidget />
+          <AlertsWidget />
+        </div>
+      </div>
     </div>
   );
 }
