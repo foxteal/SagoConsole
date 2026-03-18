@@ -10,10 +10,12 @@
     "dev": "concurrently \"tsc --watch\" \"node --watch dist/index.js\" \"cd client && npm run dev\""
   },
   "dependencies": {
+    "@types/multer": "^2.1.0",
     "better-sqlite3": "^11.8.1",
     "cookie-parser": "^1.4.7",
     "express": "^4.21.2",
-    "jose": "^6.0.11"
+    "jose": "^6.0.11",
+    "multer": "^2.1.1"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",

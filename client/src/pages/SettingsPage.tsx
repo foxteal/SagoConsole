@@ -1,13 +1,13 @@
 import { useState } from "react";
 import LinksSettings from "../components/settings/LinksSettings";
 import ScreensSettings from "../components/settings/ScreensSettings";
-import ContainersSettings from "../components/settings/ContainersSettings";
+import ServiceGroupsSettings from "../components/settings/ServiceGroupsSettings";
 import ThresholdsSettings from "../components/settings/ThresholdsSettings";
 
 const tabs = [
   { id: "links", label: "Service Links" },
   { id: "screens", label: "Generic Screens" },
-  { id: "containers", label: "Containers" },
+  { id: "containers", label: "Service Groups" },
   { id: "thresholds", label: "Alert Thresholds" },
 ] as const;
 
@@ -45,7 +45,7 @@ export default function SettingsPage() {
       <div className="flex-1 overflow-y-auto p-6 pb-10">
         {activeTab === "links" && <LinksSettings />}
         {activeTab === "screens" && <ScreensSettings />}
-        {activeTab === "containers" && <ContainersSettings />}
+        {activeTab === "containers" && <ServiceGroupsSettings />}
         {activeTab === "thresholds" && <ThresholdsSettings />}
       </div>
     </div>

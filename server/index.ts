@@ -16,6 +16,9 @@ import proxyRouter from "./routes/proxy";
 import rommSorterRouter from "./routes/romm-sorter";
 import tdarrCleanupRouter from "./routes/tdarr-cleanup";
 import thresholdsRouter from "./routes/thresholds";
+import iconsRouter from "./routes/icons";
+import serviceGroupsRouter from "./routes/service-groups";
+import { ICONS_DIR } from "./routes/icons";
 import { pollAlerts } from "./services/alerts";
 
 const app = express();
@@ -37,6 +40,11 @@ app.use(proxyRouter);
 app.use(rommSorterRouter);
 app.use(tdarrCleanupRouter);
 app.use(thresholdsRouter);
+app.use(iconsRouter);
+app.use(serviceGroupsRouter);
+
+// Serve uploaded icons as static files
+app.use("/api/icons", express.static(ICONS_DIR));
 
 // Static files (built client)
 const clientDist = path.join(__dirname, "..", "client", "dist");

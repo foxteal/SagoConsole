@@ -29,24 +29,18 @@ interface ServerData {
 interface ContainerInfo {
   name: string;
   state: string;
-  project: string;
 }
 
-interface ProjectGroup {
+interface ServiceGroup {
+  id: number;
   name: string;
   containers: ContainerInfo[];
 }
 
-interface ServerContainers {
-  server: string;
-  total: number;
-  running: number;
-  projects: ProjectGroup[];
-}
-
 export default function DashboardPage() {
   const [servers, setServers] = useState<ServerData[]>([]);
-  const [containerServers, setContainerServers] = useState<ServerContainers[]>([]);
+  const [serviceGroups, setServiceGroups] = useState<ServiceGroup[]>([]);
+  const [ungrouped, setUngrouped] = useState<ContainerInfo[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [secondsAgo, setSecondsAgo] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +59,8 @@ export default function DashboardPage() {
       }
       if (containersRes.ok) {
         const data = await containersRes.json();
-        setContainerServers(data.servers);
+        setServiceGroups(data.serviceGroups || []);
+        setUngrouped(data.ungrouped || []);
       }
 
       setLastUpdated(Date.now());
@@ -129,7 +124,7 @@ export default function DashboardPage() {
         )}
       </div>
       <div className="grid grid-cols-[1fr_340px] gap-4 max-[900px]:grid-cols-1">
-        {containerServers.length > 0 && <ContainerGrid servers={containerServers} />}
+        {(serviceGroups.length > 0 || ungrouped.length > 0) && <ContainerGrid serviceGroups={serviceGroups} ungrouped={ungrouped} />}
         <div>
           <UpdatesWidget />
           <AlertsWidget />

@@ -83,7 +83,7 @@ export interface AuthRequest extends Request {
 
 export async function authMiddleware(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   // Skip auth for public routes
-  if (req.path === "/api/health" || req.path === "/api/auth/config" || req.path === "/api/auth/login") {
+  if (req.path === "/api/health" || req.path === "/api/auth/config" || req.path === "/api/auth/login" || (req.path.startsWith("/api/icons/") && req.method === "GET")) {
     next();
     return;
   }

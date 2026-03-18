@@ -72,5 +72,18 @@ export function createTables(db: Database.Database): void {
       critical_value REAL,
       UNIQUE(server, metric)
     );
+
+    CREATE TABLE IF NOT EXISTS service_groups (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS service_group_containers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      group_id INTEGER NOT NULL REFERENCES service_groups(id) ON DELETE CASCADE,
+      container_name TEXT NOT NULL,
+      UNIQUE(group_id, container_name)
+    );
   `);
 }

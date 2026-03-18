@@ -123,6 +123,29 @@ router.delete("/api/links/:id", (req, res) => {
   }
 });
 
+// PUT /api/link-categories/reorder — batch update sort_order
+router.put("/api/link-categories/reorder", (req, res) => {
+  try {
+    const items: { id: number; sort_order: number }[] = req.body.items;
+    if (!Array.isArray(items)) {
+      res.status(400).json({ error: "items array required" });
+      return;
+    }
+    const db = getDb();
+    const stmt = db.prepare("UPDATE link_categories SET sort_order = ? WHERE id = ?");
+    const tx = db.transaction(() => {
+      for (const item of items) {
+        stmt.run(item.sort_order, item.id);
+      }
+    });
+    tx();
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Reorder categories error:", err);
+    res.status(500).json({ error: "Failed to reorder categories" });
+  }
+});
+
 // --- Link Categories ---
 
 // GET /api/link-categories

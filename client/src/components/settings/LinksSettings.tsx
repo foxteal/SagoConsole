@@ -22,7 +22,7 @@ interface LinkGroup {
   links: Link[];
 }
 
-const emptyForm = { title: "", url: "", icon_url: "", category: "" };
+const emptyForm = { title: "", url: "", icon_url: "", category: "", iconMode: "url" as "url" | "upload" };
 
 const inputClass = "w-full bg-bg-surface border border-transparent rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent transition-colors";
 
@@ -36,6 +36,7 @@ export default function LinksSettings() {
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [newCategory, setNewCategory] = useState("");
   const [showCatForm, setShowCatForm] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -63,7 +64,8 @@ export default function LinksSettings() {
 
   const openEdit = (link: Link) => {
     setEditingLinkId(link.id);
-    setForm({ title: link.title, url: link.url, icon_url: link.icon_url || "", category: link.category });
+    const isUpload = link.icon_url?.startsWith("/api/icons/") ?? false;
+    setForm({ title: link.title, url: link.url, icon_url: link.icon_url || "", category: link.category, iconMode: isUpload ? "upload" : "url" });
     setShowAddForm(false);
   };
 
@@ -116,6 +118,35 @@ export default function LinksSettings() {
   const deleteCategory = async (cat: Category) => {
     if (cat.link_count > 0) return;
     await apiClient(`/api/link-categories/${cat.id}`, { method: "DELETE" });
+    fetchData();
+  };
+
+  const handleIconUpload = async (file: File) => {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("icon", file);
+      const res = await apiClient("/api/icons/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.url) {
+        setForm((prev) => ({ ...prev, icon_url: data.url }));
+      }
+    } catch (err) {
+      console.error("Icon upload failed:", err);
+    }
+    setUploading(false);
+  };
+
+  const moveCategory = async (cat: Category, direction: "up" | "down") => {
+    const idx = categories.findIndex((c) => c.id === cat.id);
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= categories.length) return;
+
+    const items = [
+      { id: cat.id, sort_order: categories[swapIdx].sort_order },
+      { id: categories[swapIdx].id, sort_order: cat.sort_order },
+    ];
+    await apiClient("/api/link-categories/reorder", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items }) });
     fetchData();
   };
 
@@ -195,8 +226,26 @@ export default function LinksSettings() {
               <input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} className={inputClass} />
             </div>
             <div>
-              <label className="text-xs text-text-tertiary uppercase tracking-wider mb-1.5 block">Icon URL</label>
-              <input value={form.icon_url} onChange={(e) => setForm({ ...form, icon_url: e.target.value })} placeholder="Optional" className={inputClass + " placeholder:text-text-tertiary"} />
+              <label className="text-xs text-text-tertiary uppercase tracking-wider mb-1.5 block">Icon</label>
+              <div className="flex items-center gap-2">
+                {form.icon_url && (
+                  <img src={form.icon_url} alt="" className="w-7 h-7 rounded-sm object-contain flex-shrink-0" />
+                )}
+                <div className="flex-1">
+                  <div className="flex gap-1 mb-1.5">
+                    <button type="button" onClick={() => setForm({ ...form, iconMode: "url" })} className={`px-2 py-0.5 text-xs rounded ${form.iconMode === "url" ? "bg-accent text-bg-deep" : "text-text-tertiary hover:text-text-secondary"}`}>URL</button>
+                    <button type="button" onClick={() => setForm({ ...form, iconMode: "upload" })} className={`px-2 py-0.5 text-xs rounded ${form.iconMode === "upload" ? "bg-accent text-bg-deep" : "text-text-tertiary hover:text-text-secondary"}`}>Upload</button>
+                  </div>
+                  {form.iconMode === "url" ? (
+                    <input value={form.icon_url} onChange={(e) => setForm({ ...form, icon_url: e.target.value })} placeholder="Optional" className={inputClass + " placeholder:text-text-tertiary"} />
+                  ) : (
+                    <label className={`block cursor-pointer ${inputClass} text-center ${uploading ? "opacity-50" : "hover:border-accent"}`}>
+                      {uploading ? "Uploading..." : "Choose file..."}
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleIconUpload(f); }} />
+                    </label>
+                  )}
+                </div>
+              </div>
             </div>
             <div>
               <label className="text-xs text-text-tertiary uppercase tracking-wider mb-1.5 block">Category</label>
@@ -241,8 +290,26 @@ export default function LinksSettings() {
                         <input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} className={inputClass} />
                       </div>
                       <div>
-                        <label className="text-xs text-text-tertiary uppercase tracking-wider mb-1.5 block">Icon URL</label>
-                        <input value={form.icon_url} onChange={(e) => setForm({ ...form, icon_url: e.target.value })} placeholder="Optional" className={inputClass + " placeholder:text-text-tertiary"} />
+                        <label className="text-xs text-text-tertiary uppercase tracking-wider mb-1.5 block">Icon</label>
+                        <div className="flex items-center gap-2">
+                          {form.icon_url && (
+                            <img src={form.icon_url} alt="" className="w-7 h-7 rounded-sm object-contain flex-shrink-0" />
+                          )}
+                          <div className="flex-1">
+                            <div className="flex gap-1 mb-1.5">
+                              <button type="button" onClick={() => setForm({ ...form, iconMode: "url" })} className={`px-2 py-0.5 text-xs rounded ${form.iconMode === "url" ? "bg-accent text-bg-deep" : "text-text-tertiary hover:text-text-secondary"}`}>URL</button>
+                              <button type="button" onClick={() => setForm({ ...form, iconMode: "upload" })} className={`px-2 py-0.5 text-xs rounded ${form.iconMode === "upload" ? "bg-accent text-bg-deep" : "text-text-tertiary hover:text-text-secondary"}`}>Upload</button>
+                            </div>
+                            {form.iconMode === "url" ? (
+                              <input value={form.icon_url} onChange={(e) => setForm({ ...form, icon_url: e.target.value })} placeholder="Optional" className={inputClass + " placeholder:text-text-tertiary"} />
+                            ) : (
+                              <label className={`block cursor-pointer ${inputClass} text-center ${uploading ? "opacity-50" : "hover:border-accent"}`}>
+                                {uploading ? "Uploading..." : "Choose file..."}
+                                <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleIconUpload(f); }} />
+                              </label>
+                            )}
+                          </div>
+                        </div>
                       </div>
                       <div>
                         <label className="text-xs text-text-tertiary uppercase tracking-wider mb-1.5 block">Category</label>
@@ -312,9 +379,19 @@ export default function LinksSettings() {
         <div className="mt-8">
           <h3 className="text-sm font-medium text-text-primary mb-2">Category Order</h3>
           <div className="border border-border-subtle rounded-lg overflow-hidden">
-            {categories.map((cat) => (
+            {categories.map((cat, idx) => (
               <div key={cat.id} className="flex items-center justify-between px-3 py-2 border-b border-border-subtle last:border-b-0">
-                <span className="text-sm text-text-primary">{cat.name}</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col gap-0.5">
+                    <button onClick={() => moveCategory(cat, "up")} disabled={idx === 0} className="text-text-tertiary hover:text-text-primary disabled:opacity-20 transition-colors active:scale-[0.97]">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 15l-6-6-6 6" /></svg>
+                    </button>
+                    <button onClick={() => moveCategory(cat, "down")} disabled={idx === categories.length - 1} className="text-text-tertiary hover:text-text-primary disabled:opacity-20 transition-colors active:scale-[0.97]">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                  </div>
+                  <span className="text-sm text-text-primary">{cat.name}</span>
+                </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[13px] text-text-tertiary font-mono font-light">{cat.link_count} links</span>
                   {cat.link_count === 0 && (

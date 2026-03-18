@@ -1,23 +1,17 @@
 interface ContainerInfo {
   name: string;
   state: string;
-  project: string;
 }
 
-interface ProjectGroup {
+interface ServiceGroup {
+  id: number;
   name: string;
   containers: ContainerInfo[];
 }
 
-interface ServerContainers {
-  server: string;
-  total: number;
-  running: number;
-  projects: ProjectGroup[];
-}
-
 interface ContainerGridProps {
-  servers: ServerContainers[];
+  serviceGroups: ServiceGroup[];
+  ungrouped: ContainerInfo[];
 }
 
 function ContainerDot({ container }: { container: ContainerInfo }) {
@@ -37,12 +31,12 @@ function ContainerDot({ container }: { container: ContainerInfo }) {
   );
 }
 
-function ProjectCluster({ project }: { project: ProjectGroup }) {
+function GroupCluster({ group }: { group: ServiceGroup }) {
   return (
     <div className="bg-bg-card border border-border-subtle rounded-md px-2.5 py-2 flex items-center gap-1.5 transition-all hover:border-border hover:bg-bg-card-hover">
-      <span className="text-[13px] text-text-secondary font-medium mr-1">{project.name}</span>
+      <span className="text-[13px] text-text-secondary font-medium mr-1">{group.name}</span>
       <div className="flex items-center gap-[3px]">
-        {project.containers.map((c) => (
+        {group.containers.map((c) => (
           <ContainerDot key={c.name} container={c} />
         ))}
       </div>
@@ -50,27 +44,39 @@ function ProjectCluster({ project }: { project: ProjectGroup }) {
   );
 }
 
-export default function ContainerGrid({ servers }: ContainerGridProps) {
+export default function ContainerGrid({ serviceGroups, ungrouped }: ContainerGridProps) {
+  const allContainers = [
+    ...serviceGroups.flatMap((g) => g.containers),
+    ...ungrouped,
+  ];
+  const totalRunning = allContainers.filter((c) => c.state === "running").length;
+  const total = allContainers.length;
+
   return (
     <div className="bg-bg-surface border border-border-subtle rounded-lg p-4">
-      <div className="text-xs font-medium uppercase tracking-[1px] text-text-secondary mb-3.5">
-        Container Status
-      </div>
-      {servers.map((server) => (
-        <div key={server.server} className="mb-4 last:mb-0">
-          <div className="text-sm font-semibold text-text-primary mb-2.5 flex items-center gap-2">
-            {server.server}
-            <span className="font-mono text-[13px] text-text-tertiary font-light">
-              {server.running}/{server.total} running
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {server.projects.map((project) => (
-              <ProjectCluster key={project.name} project={project} />
-            ))}
-          </div>
+      <div className="flex items-center justify-between mb-3.5">
+        <div className="text-xs font-medium uppercase tracking-[1px] text-text-secondary">
+          Container Status
         </div>
-      ))}
+        <span className="font-mono text-[13px] text-text-tertiary font-light">
+          {totalRunning}/{total} running
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {serviceGroups.map((group) => (
+          <GroupCluster key={group.id} group={group} />
+        ))}
+        {ungrouped.length > 0 && (
+          <div className="bg-bg-card border border-border-subtle rounded-md px-2.5 py-2 flex items-center gap-1.5 transition-all hover:border-border hover:bg-bg-card-hover opacity-60">
+            <span className="text-[13px] text-text-tertiary font-medium mr-1">Ungrouped</span>
+            <div className="flex items-center gap-[3px]">
+              {ungrouped.map((c) => (
+                <ContainerDot key={c.name} container={c} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
