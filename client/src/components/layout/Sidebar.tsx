@@ -43,12 +43,14 @@ function NavItem({
   label,
   end,
   badge,
+  badgeVariant = "red",
 }: {
   to: string;
   icon: string;
   label: string;
   end?: boolean;
   badge?: number;
+  badgeVariant?: "red" | "amber";
 }) {
   return (
     <NavLink
@@ -70,7 +72,9 @@ function NavItem({
           <NavIcon icon={icon} />
           {label}
           {badge != null && badge > 0 && (
-            <span className="ml-auto bg-red-dim text-red text-xs font-semibold font-mono px-1.5 py-px rounded-lg">
+            <span className={`ml-auto text-xs font-semibold font-mono px-1.5 py-px rounded-lg ${
+              badgeVariant === "amber" ? "bg-amber-dim text-amber" : "bg-red-dim text-red"
+            }`}>
               {badge}
             </span>
           )}
@@ -83,23 +87,31 @@ function NavItem({
 export default function Sidebar() {
   const { user, logout } = useAuth();
   const [alertCount, setAlertCount] = useState(0);
+  const [updateCount, setUpdateCount] = useState(0);
   const [screens, setScreens] = useState<ScreenNav[]>([]);
 
   useEffect(() => {
-    const fetchCount = async () => {
+    const fetchCounts = async () => {
       try {
-        const res = await apiClient("/api/alerts/active");
-        if (res.ok) {
-          const data = await res.json();
+        const [alertsRes, updatesRes] = await Promise.all([
+          apiClient("/api/alerts/active"),
+          apiClient("/api/updates"),
+        ]);
+        if (alertsRes.ok) {
+          const data = await alertsRes.json();
           setAlertCount(data.count);
+        }
+        if (updatesRes.ok) {
+          const data = await updatesRes.json();
+          setUpdateCount(data.count);
         }
       } catch {
         // silent
       }
     };
 
-    fetchCount();
-    const interval = setInterval(fetchCount, 30000);
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -135,7 +147,8 @@ export default function Sidebar() {
             icon={item.icon}
             label={item.label}
             end={item.path === "/"}
-            badge={item.label === "Alerts" ? alertCount : undefined}
+            badge={item.label === "Alerts" ? alertCount : item.label === "Containers" ? updateCount : undefined}
+            badgeVariant={item.label === "Containers" ? "amber" : "red"}
           />
         ))}
 

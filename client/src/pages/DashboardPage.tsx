@@ -2,7 +2,6 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { apiClient } from "../api/client";
 import ServerCard from "../components/dashboard/ServerCard";
 import ContainerGrid from "../components/dashboard/ContainerGrid";
-import UpdatesWidget from "../components/dashboard/UpdatesWidget";
 import AlertsWidget from "../components/dashboard/AlertsWidget";
 
 interface Drive {
@@ -126,7 +125,6 @@ export default function DashboardPage() {
       <div className="grid grid-cols-[1fr_340px] gap-4 max-[900px]:grid-cols-1">
         {(serviceGroups.length > 0 || ungrouped.length > 0) && <ContainerGrid serviceGroups={serviceGroups} ungrouped={ungrouped} />}
         <div>
-          <UpdatesWidget />
           <AlertsWidget />
         </div>
       </div>
