@@ -20,6 +20,8 @@ import thresholdsRouter from "./routes/thresholds";
 import iconsRouter from "./routes/icons";
 import serviceGroupsRouter from "./routes/service-groups";
 import alertMonitorsRouter from "./routes/alert-monitors";
+import diunRouter from "./routes/diun";
+import containerActionsRouter from "./routes/container-actions";
 import { ICONS_DIR } from "./routes/icons";
 import { pollAlerts, pollSyncthing } from "./services/alerts";
 
@@ -46,6 +48,8 @@ app.use(thresholdsRouter);
 app.use(iconsRouter);
 app.use(serviceGroupsRouter);
 app.use(alertMonitorsRouter);
+app.use(diunRouter);
+app.use(containerActionsRouter);
 
 // Serve uploaded icons as static files
 app.use("/api/icons", express.static(ICONS_DIR));

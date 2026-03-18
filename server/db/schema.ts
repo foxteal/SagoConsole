@@ -94,5 +94,18 @@ export function createTables(db: Database.Database): void {
       config TEXT NOT NULL DEFAULT '{}',
       UNIQUE(type, name)
     );
+
+    CREATE TABLE IF NOT EXISTS diun_updates (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      host TEXT NOT NULL,
+      image TEXT NOT NULL,
+      current_digest TEXT,
+      latest_digest TEXT,
+      hub_link TEXT,
+      platform TEXT,
+      detected_at TEXT NOT NULL DEFAULT (datetime('now')),
+      dismissed INTEGER NOT NULL DEFAULT 0,
+      UNIQUE(host, image)
+    );
   `);
 }

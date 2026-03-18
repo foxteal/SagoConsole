@@ -2,8 +2,11 @@ import { config } from "../config";
 import { getDb } from "../db";
 
 interface PortainerContainer {
+  Id: string;
   Names: string[];
   State: string;
+  Status: string;
+  Image: string;
   Labels: Record<string, string>;
 }
 
@@ -20,8 +23,11 @@ const ENDPOINTS: EndpointDef[] = [
 ];
 
 export interface ContainerInfo {
+  id: string;
   name: string;
   state: string;
+  image: string;
+  status: string;
   project: string;
 }
 
@@ -60,8 +66,11 @@ async function fetchContainers(endpoint: EndpointDef): Promise<ServerContainers>
   const data = (await res.json()) as PortainerContainer[];
 
   const containers: ContainerInfo[] = data.map((c) => ({
+    id: c.Id,
     name: c.Names[0]?.replace(/^\//, "") || "unknown",
     state: c.State,
+    image: c.Image,
+    status: c.Status || "",
     project: c.Labels["com.docker.compose.project"] || "other",
   }));
 
@@ -138,4 +147,46 @@ export async function getAllContainers(raw = false): Promise<ServerContainers[]>
       projects: filteredProjects,
     };
   });
+}
+
+// Container actions via Portainer API
+
+async function portainerPost(path: string, body?: unknown): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch(`${config.portainer.url}${path}`, {
+      method: "POST",
+      headers: {
+        "X-API-Key": config.portainer.apiKey,
+        "Content-Type": "application/json",
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error(`Portainer POST ${path} failed: ${res.status} ${text}`);
+      return { ok: false, error: `Portainer returned ${res.status}` };
+    }
+
+    return { ok: true };
+  } catch (err) {
+    console.error(`Portainer POST ${path} error:`, err);
+    return { ok: false, error: String(err) };
+  }
+}
+
+export async function startContainer(endpointId: number, containerId: string) {
+  return portainerPost(`/api/endpoints/${endpointId}/docker/containers/${containerId}/start`);
+}
+
+export async function stopContainer(endpointId: number, containerId: string) {
+  return portainerPost(`/api/endpoints/${endpointId}/docker/containers/${containerId}/stop`);
+}
+
+export async function restartContainer(endpointId: number, containerId: string) {
+  return portainerPost(`/api/endpoints/${endpointId}/docker/containers/${containerId}/restart`);
+}
+
+export async function recreateContainer(endpointId: number, containerId: string) {
+  return portainerPost(`/api/docker/${endpointId}/containers/${containerId}/recreate`, { PullImage: true });
 }

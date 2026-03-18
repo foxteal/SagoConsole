@@ -12,6 +12,7 @@ interface ScreenNav {
 const overviewItems = [
   { label: "Dashboard", path: "/", icon: "grid" },
   { label: "Services", path: "/services", icon: "link" },
+  { label: "Containers", path: "/containers", icon: "container" },
   { label: "Alerts", path: "/alerts", icon: "alert" },
 ];
 
@@ -25,6 +26,7 @@ function NavIcon({ icon }: { icon: string }) {
     download: "M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3",
     queue: "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01",
     play: "M5 3l14 9-14 9V3z",
+    container: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16zM3.27 6.96L12 12.01l8.73-5.05M12 22.08V12",
     gamepad: "M6 11h4M8 9v4M15 12h.01M18 10h.01M17.32 5H6.68a4 4 0 00-3.978 3.59C2.166 12.054 2 15.554 2 17a2 2 0 004 0l1.16-3.48A2 2 0 019.06 12h5.88a2 2 0 011.9 1.52L18 17a2 2 0 004 0c0-1.446-.166-4.946-.703-8.41A4 4 0 0017.32 5z",
   };
 

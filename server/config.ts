@@ -13,9 +13,8 @@ export const config = {
     url: process.env.PORTAINER_URL || "https://portainer.sagocactus.com",
     apiKey: process.env.PORTAINER_API_KEY || "",
   },
-  tugtainer: {
-    url: process.env.TUGTAINER_URL || "http://host.docker.internal:9412",
-    password: process.env.TUGTAINER_PASSWORD || "",
+  diun: {
+    webhookToken: process.env.DIUN_WEBHOOK_TOKEN || "",
   },
   backrest: {
     url: process.env.BACKREST_URL || "http://host.docker.internal:9898",

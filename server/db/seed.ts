@@ -64,7 +64,6 @@ const links: LinkSeed[] = [
   { title: "Twingate", url: "https://lazylab.twingate.com/", icon_url: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/twingate.webp", category: "Infrastructure", sort_order: 8 },
   { title: "Cloudflare", url: "https://dash.cloudflare.com/20e9a0d7b80035e5ed9742711332e8b2/home/domains", icon_url: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/cloudflare.webp", category: "Infrastructure", sort_order: 9 },
   { title: "Authentik", url: "https://auth.foxteal.com/", icon_url: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/authentik.webp", category: "Infrastructure", sort_order: 10 },
-  { title: "Tugtainer", url: "https://tugtainer.sagocactus.com/", icon_url: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/tugtainer.webp", category: "Infrastructure", sort_order: 11 },
 ];
 
 export function seedLinks(db: Database.Database): void {
@@ -184,7 +183,6 @@ export function seedAlertThresholds(db: Database.Database): void {
 
 const alertMonitors = [
   { type: "container", name: "meeting-assistant", config: "{}" },
-  { type: "container", name: "tugtainer", config: "{}" },
   { type: "container", name: "tdarr-cleanup", config: "{}" },
   { type: "container", name: "romm-save-sync", config: "{}" },
   { type: "container", name: "homelab-backup", config: "{}" },
