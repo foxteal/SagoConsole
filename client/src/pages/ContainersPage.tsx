@@ -88,7 +88,7 @@ function ActionButton({
   title: string;
   disabled?: boolean;
   loading?: boolean;
-  variant: "default" | "danger" | "accent";
+  variant: "default" | "danger" | "accent" | "dim";
   onClick: () => void;
 }) {
   const base = "w-7 h-7 flex items-center justify-center rounded border transition-all active:scale-[0.93] disabled:opacity-40 disabled:cursor-not-allowed";
@@ -96,6 +96,7 @@ function ActionButton({
     default: "bg-bg-card border-border-subtle text-text-secondary hover:border-border hover:text-text-primary",
     danger: "bg-red-dim/50 border-red-dim text-red hover:bg-red-dim",
     accent: "bg-accent-glow border-accent-dim text-accent hover:bg-accent-glow/80",
+    dim: "bg-bg-card border-border-subtle text-text-tertiary/50 hover:border-border hover:text-text-tertiary",
   };
 
   return (
@@ -113,18 +114,6 @@ function ActionButton({
 function SortArrow({ active, dir }: { active: boolean; dir: SortDir }) {
   if (!active) return null;
   return <span className="ml-1 text-accent">{dir === "asc" ? "\u2191" : "\u2193"}</span>;
-}
-
-function UpdateIndicator({ hasUpdate }: { hasUpdate: boolean }) {
-  if (!hasUpdate) {
-    return <span className="inline-block w-2 h-2 rounded-full bg-border-subtle/30" />;
-  }
-  return (
-    <span
-      className="inline-block w-2 h-2 rounded-full bg-amber shadow-[0_0_6px_rgba(251,191,36,0.5)]"
-      title="Update available"
-    />
-  );
 }
 
 export default function ContainersPage() {
@@ -347,7 +336,6 @@ export default function ContainersPage() {
                         <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                           Actions
                         </th>
-                        <th className="w-[30px] border-b border-border-subtle" />
                         <th className={thClass} onClick={() => toggleSort(server.server, "name")}>
                           Name<SortArrow active={sort.key === "name"} dir={sort.dir} />
                         </th>
@@ -365,7 +353,7 @@ export default function ContainersPage() {
                     <tbody>
                       {server.containers.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="px-3 py-6 text-center text-[13px] text-text-tertiary font-mono">
+                          <td colSpan={5} className="px-3 py-6 text-center text-[13px] text-text-tertiary font-mono">
                             No containers
                           </td>
                         </tr>
@@ -411,15 +399,12 @@ export default function ContainersPage() {
                                   />
                                   <ActionButton
                                     action="update"
-                                    title="Update"
+                                    title={updateAvailable ? "Update available" : "Update"}
                                     loading={loadingAction === "update"}
-                                    variant="accent"
+                                    variant={updateAvailable ? "accent" : "dim"}
                                     onClick={() => doAction(server.endpointId, c.id, "update")}
                                   />
                                 </div>
-                              </td>
-                              <td className="px-1 py-2 border-b border-border-subtle text-center">
-                                <UpdateIndicator hasUpdate={updateAvailable} />
                               </td>
                               <td className="px-3 py-2 border-b border-border-subtle">
                                 <span className="font-mono text-[13px] text-text-primary font-light">{c.name}</span>
