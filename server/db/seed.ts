@@ -182,6 +182,35 @@ export function seedAlertThresholds(db: Database.Database): void {
   console.log(`Seeded alert thresholds for ${SERVERS.length} servers`);
 }
 
+const alertMonitors = [
+  { type: "container", name: "meeting-assistant", config: "{}" },
+  { type: "container", name: "tugtainer", config: "{}" },
+  { type: "container", name: "tdarr-cleanup", config: "{}" },
+  { type: "container", name: "romm-save-sync", config: "{}" },
+  { type: "container", name: "homelab-backup", config: "{}" },
+  { type: "backrest", name: "b2-hot-plan", config: JSON.stringify({ planId: "b2-hot-plan", interval: "daily", graceHours: 2 }) },
+  { type: "backrest", name: "s3-cold-plan", config: JSON.stringify({ planId: "s3-cold-plan", interval: "weekly", graceHours: 4 }) },
+  { type: "syncthing", name: "vps-backups", config: JSON.stringify({ folderId: "vps-backups" }) },
+  { type: "syncthing", name: "homelab-backups", config: JSON.stringify({ folderId: "zxrji-6jeua" }) },
+  { type: "syncthing", name: "PSC Transcripts", config: JSON.stringify({ folderId: "xcz3k-jpjmf" }) },
+];
+
+export function seedAlertMonitors(db: Database.Database): void {
+  const count = db.prepare("SELECT COUNT(*) as count FROM alert_monitors").get() as { count: number };
+  if (count.count > 0) return;
+
+  const insert = db.prepare(
+    "INSERT INTO alert_monitors (type, name, config) VALUES (?, ?, ?)"
+  );
+  const tx = db.transaction(() => {
+    for (const m of alertMonitors) {
+      insert.run(m.type, m.name, m.config);
+    }
+  });
+  tx();
+  console.log(`Seeded ${alertMonitors.length} alert monitors`);
+}
+
 export function seedScreens(db: Database.Database): void {
   // Remove custom screens from generic screens — now custom pages
   db.prepare("DELETE FROM screens WHERE slug = 'tdarr-cleanup'").run();

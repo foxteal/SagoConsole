@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import { config } from "../config";
 import { createTables } from "./schema";
-import { seedLinks, seedScreens, seedLinkCategories, seedAlertThresholds } from "./seed";
+import { seedLinks, seedScreens, seedLinkCategories, seedAlertThresholds, seedAlertMonitors } from "./seed";
 
 let db: Database.Database;
 
@@ -23,6 +23,7 @@ export function getDb(): Database.Database {
     seedLinkCategories(db);
     seedScreens(db);
     seedAlertThresholds(db);
+    seedAlertMonitors(db);
   }
   return db;
 }

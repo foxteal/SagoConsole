@@ -19,8 +19,9 @@ import jellyfinRouter from "./routes/jellyfin";
 import thresholdsRouter from "./routes/thresholds";
 import iconsRouter from "./routes/icons";
 import serviceGroupsRouter from "./routes/service-groups";
+import alertMonitorsRouter from "./routes/alert-monitors";
 import { ICONS_DIR } from "./routes/icons";
-import { pollAlerts } from "./services/alerts";
+import { pollAlerts, pollSyncthing } from "./services/alerts";
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use(jellyfinRouter);
 app.use(thresholdsRouter);
 app.use(iconsRouter);
 app.use(serviceGroupsRouter);
+app.use(alertMonitorsRouter);
 
 // Serve uploaded icons as static files
 app.use("/api/icons", express.static(ICONS_DIR));
@@ -65,6 +67,12 @@ pollAlerts().catch((err) => console.error("Initial alert poll failed:", err));
 setInterval(() => {
   pollAlerts().catch((err) => console.error("Alert poll failed:", err));
 }, 60000);
+
+// Syncthing poll on separate 10-minute interval
+pollSyncthing().catch((err) => console.error("Initial syncthing poll:", err));
+setInterval(() => {
+  pollSyncthing().catch((err) => console.error("Syncthing poll failed:", err));
+}, 600_000);
 
 app.listen(config.port, () => {
   console.log(`SagoConsole listening on port ${config.port}`);

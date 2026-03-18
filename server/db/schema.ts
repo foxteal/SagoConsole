@@ -85,5 +85,14 @@ export function createTables(db: Database.Database): void {
       container_name TEXT NOT NULL,
       UNIQUE(group_id, container_name)
     );
+
+    CREATE TABLE IF NOT EXISTS alert_monitors (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      type TEXT NOT NULL,
+      name TEXT NOT NULL,
+      enabled INTEGER NOT NULL DEFAULT 1,
+      config TEXT NOT NULL DEFAULT '{}',
+      UNIQUE(type, name)
+    );
   `);
 }

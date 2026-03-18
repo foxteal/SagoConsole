@@ -17,4 +17,13 @@ export const config = {
     url: process.env.TUGTAINER_URL || "http://host.docker.internal:9412",
     password: process.env.TUGTAINER_PASSWORD || "",
   },
+  backrest: {
+    url: process.env.BACKREST_URL || "http://host.docker.internal:9898",
+    username: process.env.BACKREST_USERNAME || "skip",
+    password: process.env.BACKREST_PASSWORD || "",
+  },
+  syncthing: {
+    url: process.env.SYNCTHING_URL || "http://host.docker.internal:8384",
+    apiKey: process.env.SYNCTHING_API_KEY || "",
+  },
 };

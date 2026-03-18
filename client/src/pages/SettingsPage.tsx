@@ -3,12 +3,14 @@ import LinksSettings from "../components/settings/LinksSettings";
 import ScreensSettings from "../components/settings/ScreensSettings";
 import ServiceGroupsSettings from "../components/settings/ServiceGroupsSettings";
 import ThresholdsSettings from "../components/settings/ThresholdsSettings";
+import AlertMonitorsSettings from "../components/settings/AlertMonitorsSettings";
 
 const tabs = [
   { id: "links", label: "Service Links" },
   { id: "screens", label: "Generic Screens" },
   { id: "containers", label: "Service Groups" },
   { id: "thresholds", label: "Alert Thresholds" },
+  { id: "alert-monitors", label: "Alert Monitors" },
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
@@ -47,6 +49,7 @@ export default function SettingsPage() {
         {activeTab === "screens" && <ScreensSettings />}
         {activeTab === "containers" && <ServiceGroupsSettings />}
         {activeTab === "thresholds" && <ThresholdsSettings />}
+        {activeTab === "alert-monitors" && <AlertMonitorsSettings />}
       </div>
     </div>
   );
