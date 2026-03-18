@@ -8,6 +8,7 @@ import AlertsPage from "./pages/AlertsPage";
 import GenericScreen from "./pages/GenericScreen";
 import RommSorterPage from "./pages/RommSorterPage";
 import TdarrCleanupPage from "./pages/TdarrCleanupPage";
+import JellyfinPage from "./pages/JellyfinPage";
 import SettingsPage from "./pages/SettingsPage";
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="screens/:slug" element={<GenericScreen />} />
         <Route path="romm-sorter" element={<RommSorterPage />} />
         <Route path="tdarr-cleanup" element={<TdarrCleanupPage />} />
+        <Route path="jellyfin" element={<JellyfinPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
     </Routes>

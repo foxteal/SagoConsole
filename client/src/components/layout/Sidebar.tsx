@@ -141,6 +141,7 @@ export default function Sidebar() {
           Tools
         </div>
         <NavItem to="/romm-sorter" icon="gamepad" label="Romm Sorter" />
+        <NavItem to="/jellyfin" icon="play" label="Jellyfin" />
         <NavItem to="/tdarr-cleanup" icon="film" label="Tdarr Cleanup" />
         {screens.map((screen) => (
           <NavItem

@@ -141,23 +141,6 @@ const screens: ScreenSeed[] = [
     global_actions: JSON.stringify([]),
     sort_order: 2,
   },
-  {
-    slug: "jellyfin",
-    name: "Jellyfin",
-    icon: "play",
-    type: "action-only",
-    api_source: "/api/proxy/jellyfin",
-    refresh_seconds: 0,
-    summary_template: null,
-    columns: JSON.stringify([]),
-    row_actions: JSON.stringify([]),
-    global_actions: JSON.stringify([
-      { id: "refresh-movies", label: "Refresh Movies", method: "POST", url: "/api/proxy/jellyfin/action/refresh-movies" },
-      { id: "refresh-tv", label: "Refresh TV", method: "POST", url: "/api/proxy/jellyfin/action/refresh-tv" },
-      { id: "refresh-all", label: "Refresh All", method: "POST", url: "/api/proxy/jellyfin/action/refresh-all" },
-    ]),
-    sort_order: 3,
-  },
 ];
 
 const CATEGORY_ORDER = ["AI", "Media", "Gaming", "Productivity", "Projects", "Obsidian", "Monitoring", "Infrastructure"];
@@ -200,8 +183,9 @@ export function seedAlertThresholds(db: Database.Database): void {
 }
 
 export function seedScreens(db: Database.Database): void {
-  // Remove tdarr-cleanup from generic screens — now a custom screen
+  // Remove custom screens from generic screens — now custom pages
   db.prepare("DELETE FROM screens WHERE slug = 'tdarr-cleanup'").run();
+  db.prepare("DELETE FROM screens WHERE slug = 'jellyfin'").run();
 
   const count = db.prepare("SELECT COUNT(*) as count FROM screens").get() as { count: number };
   if (count.count > 0) return;
