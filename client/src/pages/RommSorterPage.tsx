@@ -60,8 +60,10 @@ function DownloadList({
   onRefresh: () => void;
   loading: boolean;
 }) {
-  const romItems = items.filter((d) => !d.is_media);
+  const romItems = items.filter((d) => !d.is_media && d.type !== "split-rar");
+  const splitRarItems = items.filter((d) => d.type === "split-rar");
   const mediaItems = items.filter((d) => d.is_media);
+  const [showSplitRar, setShowSplitRar] = useState(false);
   const [showMedia, setShowMedia] = useState(false);
 
   return (
@@ -97,6 +99,25 @@ function DownloadList({
             {romItems.map((item) => (
               <DownloadRow key={item.path} item={item} active={selectedPath === item.path} onClick={() => onSelect(item.path)} />
             ))}
+            {splitRarItems.length > 0 && (
+              <div className="mt-1">
+                <button
+                  onClick={() => setShowSplitRar(!showSplitRar)}
+                  className="w-full flex items-center gap-1.5 px-2 py-1.5 text-xs text-text-tertiary hover:text-text-secondary transition-colors"
+                >
+                  <svg
+                    width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"
+                    className={`transition-transform ${showSplitRar ? "rotate-90" : ""}`}
+                  >
+                    <path d="M4 2l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Split-RAR ({splitRarItems.length} items)
+                </button>
+                {showSplitRar && splitRarItems.map((item) => (
+                  <DownloadRow key={item.path} item={item} active={selectedPath === item.path} onClick={() => onSelect(item.path)} />
+                ))}
+              </div>
+            )}
             {mediaItems.length > 0 && (
               <div className="mt-1">
                 <button
