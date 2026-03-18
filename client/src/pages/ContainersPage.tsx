@@ -18,6 +18,13 @@ interface ServerContainers {
   containers: ContainerInfo[];
 }
 
+interface DiunUpdate {
+  id: number;
+  name: string;
+  host: string;
+  image: string;
+}
+
 type StateFilter = "all" | "running" | "stopped";
 type SortKey = "name" | "state" | "image" | "status";
 type SortDir = "asc" | "desc";
@@ -81,8 +88,21 @@ function SortArrow({ active, dir }: { active: boolean; dir: SortDir }) {
   return <span className="ml-1 text-accent">{dir === "asc" ? "\u2191" : "\u2193"}</span>;
 }
 
+function UpdateIndicator({ hasUpdate }: { hasUpdate: boolean }) {
+  if (!hasUpdate) {
+    return <span className="inline-block w-2 h-2 rounded-full bg-border-subtle/30" />;
+  }
+  return (
+    <span
+      className="inline-block w-2 h-2 rounded-full bg-amber shadow-[0_0_6px_rgba(251,191,36,0.5)]"
+      title="Update available"
+    />
+  );
+}
+
 export default function ContainersPage() {
   const [servers, setServers] = useState<ServerContainers[]>([]);
+  const [updates, setUpdates] = useState<DiunUpdate[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState<StateFilter>("all");
@@ -93,10 +113,17 @@ export default function ContainersPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const res = await apiClient("/api/containers?raw=true");
-      if (res.ok) {
-        const data = await res.json();
+      const [containersRes, updatesRes] = await Promise.all([
+        apiClient("/api/containers?raw=true"),
+        apiClient("/api/updates"),
+      ]);
+      if (containersRes.ok) {
+        const data = await containersRes.json();
         setServers(data.servers);
+      }
+      if (updatesRes.ok) {
+        const data = await updatesRes.json();
+        setUpdates(data.updates);
       }
     } catch {
       // silent
@@ -110,6 +137,17 @@ export default function ContainersPage() {
     const interval = setInterval(fetchData, 15000);
     return () => clearInterval(interval);
   }, [fetchData]);
+
+  // Build a set of "Host::image" keys for quick update lookup
+  const updateSet = useMemo(() => {
+    const set = new Set<string>();
+    for (const u of updates) {
+      set.add(`${u.host}::${u.image}`);
+    }
+    return set;
+  }, [updates]);
+
+  const hasUpdate = (host: string, image: string) => updateSet.has(`${host}::${image}`);
 
   const toggleCollapse = (server: string) => {
     setCollapsed((prev) => ({ ...prev, [server]: !prev[server] }));
@@ -126,7 +164,6 @@ export default function ContainersPage() {
   };
 
   const doAction = async (endpointId: number, containerId: string, action: string) => {
-    const key = `${containerId}-${action}`;
     setActionLoading((prev) => ({ ...prev, [containerId]: action }));
     setActionFeedback((prev) => {
       const next = { ...prev };
@@ -141,7 +178,6 @@ export default function ContainersPage() {
       const data = await res.json();
       if (data.ok) {
         setActionFeedback((prev) => ({ ...prev, [containerId]: { ok: true, msg: `${action} OK` } }));
-        // Refresh after action
         setTimeout(fetchData, 1500);
       } else {
         setActionFeedback((prev) => ({ ...prev, [containerId]: { ok: false, msg: data.error || "Failed" } }));
@@ -156,7 +192,6 @@ export default function ContainersPage() {
       });
     }
 
-    // Clear feedback after 4s
     setTimeout(() => {
       setActionFeedback((prev) => {
         const next = { ...prev };
@@ -181,7 +216,6 @@ export default function ContainersPage() {
         containers = containers.filter((c) => c.state !== "running");
       }
 
-      // Sort
       const sort = sortStates[s.server] || { key: "name" as SortKey, dir: "asc" as SortDir };
       containers = [...containers].sort((a, b) => {
         const aVal = a[sort.key];
@@ -283,6 +317,10 @@ export default function ContainersPage() {
                   <table className="w-full border-collapse">
                     <thead>
                       <tr>
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+                          Actions
+                        </th>
+                        <th className="w-[30px] border-b border-border-subtle" />
                         <th className={thClass} onClick={() => toggleSort(server.server, "name")}>
                           Name<SortArrow active={sort.key === "name"} dir={sort.dir} />
                         </th>
@@ -295,15 +333,12 @@ export default function ContainersPage() {
                         <th className={`${thClass} hidden md:table-cell`} onClick={() => toggleSort(server.server, "status")}>
                           Status<SortArrow active={sort.key === "status"} dir={sort.dir} />
                         </th>
-                        <th className="text-right px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
-                          Actions
-                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {server.containers.length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="px-3 py-6 text-center text-[13px] text-text-tertiary font-mono">
+                          <td colSpan={6} className="px-3 py-6 text-center text-[13px] text-text-tertiary font-mono">
                             No containers
                           </td>
                         </tr>
@@ -312,25 +347,12 @@ export default function ContainersPage() {
                           const isRunning = c.state === "running";
                           const loadingAction = actionLoading[c.id];
                           const feedback = actionFeedback[c.id];
+                          const updateAvailable = hasUpdate(server.server, c.image);
 
                           return (
                             <tr key={c.id} className="hover:bg-bg-card/20">
                               <td className="px-3 py-2 border-b border-border-subtle">
-                                <span className="font-mono text-[13px] text-text-primary font-light">{c.name}</span>
-                              </td>
-                              <td className="px-3 py-2 border-b border-border-subtle">
-                                <StateBadge state={c.state} />
-                              </td>
-                              <td className="px-3 py-2 border-b border-border-subtle hidden lg:table-cell">
-                                <span className="font-mono text-[13px] text-text-tertiary font-light truncate block max-w-[300px]" title={c.image}>
-                                  {c.image}
-                                </span>
-                              </td>
-                              <td className="px-3 py-2 border-b border-border-subtle hidden md:table-cell">
-                                <span className="text-[13px] text-text-secondary font-light">{c.status}</span>
-                              </td>
-                              <td className="px-3 py-2 border-b border-border-subtle">
-                                <div className="flex items-center justify-end gap-1.5">
+                                <div className="flex items-center gap-1.5">
                                   {feedback && (
                                     <span className={`text-xs font-mono mr-1 ${feedback.ok ? "text-green" : "text-red"}`}>
                                       {feedback.msg}
@@ -364,6 +386,23 @@ export default function ContainersPage() {
                                     onClick={() => doAction(server.endpointId, c.id, "update")}
                                   />
                                 </div>
+                              </td>
+                              <td className="px-1 py-2 border-b border-border-subtle text-center">
+                                <UpdateIndicator hasUpdate={updateAvailable} />
+                              </td>
+                              <td className="px-3 py-2 border-b border-border-subtle">
+                                <span className="font-mono text-[13px] text-text-primary font-light">{c.name}</span>
+                              </td>
+                              <td className="px-3 py-2 border-b border-border-subtle">
+                                <StateBadge state={c.state} />
+                              </td>
+                              <td className="px-3 py-2 border-b border-border-subtle hidden lg:table-cell">
+                                <span className="font-mono text-[13px] text-text-tertiary font-light truncate block max-w-[300px]" title={c.image}>
+                                  {c.image}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2 border-b border-border-subtle hidden md:table-cell">
+                                <span className="text-[13px] text-text-secondary font-light">{c.status}</span>
                               </td>
                             </tr>
                           );
