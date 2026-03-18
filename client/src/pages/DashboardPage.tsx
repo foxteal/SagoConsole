@@ -2,7 +2,6 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { apiClient } from "../api/client";
 import ServerCard from "../components/dashboard/ServerCard";
 import ContainerGrid from "../components/dashboard/ContainerGrid";
-import AlertsWidget from "../components/dashboard/AlertsWidget";
 
 interface Drive {
   label: string;
@@ -93,7 +92,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
+          <p className="text-sm text-text-secondary font-mono font-light mt-0.5">
             {lastUpdated ? `last updated ${secondsAgo}s ago` : "loading..."}
           </p>
         </div>
@@ -122,12 +121,7 @@ export default function DashboardPage() {
           ))
         )}
       </div>
-      <div className="grid grid-cols-[1fr_340px] gap-4 max-[900px]:grid-cols-1">
-        {(serviceGroups.length > 0 || ungrouped.length > 0) && <ContainerGrid serviceGroups={serviceGroups} ungrouped={ungrouped} />}
-        <div>
-          <AlertsWidget />
-        </div>
-      </div>
+      {(serviceGroups.length > 0 || ungrouped.length > 0) && <ContainerGrid serviceGroups={serviceGroups} ungrouped={ungrouped} />}
     </div>
   );
 }

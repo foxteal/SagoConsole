@@ -85,11 +85,11 @@ function FileTable({
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle">
         <div className="flex items-center gap-3">
-          <span className="text-xs font-medium uppercase tracking-[1px] text-text-tertiary">
+          <span className="text-[13px] font-medium uppercase tracking-[1px] text-text-tertiary">
             Pending Files
           </span>
           {!loading && (
-            <span className="text-xs font-mono text-text-tertiary">
+            <span className="text-[13px] font-mono text-text-tertiary">
               {files.length} item{files.length !== 1 ? "s" : ""}
             </span>
           )}
@@ -127,14 +127,14 @@ function FileTable({
         ) : files.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-text-tertiary text-sm">No files pending action</p>
-            <p className="text-text-tertiary text-[13px] mt-1 font-mono font-light">
+            <p className="text-text-tertiary text-sm mt-1 font-mono font-light">
               Files appear here when Tdarr marks them as completed or errored
             </p>
           </div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+              <tr className="text-[13px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                 <th className="text-left px-4 py-2.5">File</th>
                 <th className="text-left px-4 py-2.5 w-24">Library</th>
                 <th className="text-left px-4 py-2.5 w-32">Status</th>
@@ -155,48 +155,48 @@ function FileTable({
                     className="border-b border-border-subtle hover:bg-bg-card/50 transition-colors"
                   >
                     <td className="px-4 py-2.5">
-                      <div className="text-[13px] text-text-primary truncate max-w-md" title={file.file}>
+                      <div className="text-sm text-text-primary truncate max-w-md" title={file.file}>
                         {file.folder === "." ? file.fileName : file.folder}
                       </div>
                       {file.folder !== "." && (
-                        <div className="text-xs text-text-tertiary font-mono truncate max-w-md">
+                        <div className="text-[13px] text-text-tertiary font-mono truncate max-w-md">
                           {file.fileName}
                         </div>
                       )}
                     </td>
                     <td className="px-4 py-2.5">
-                      <span className="text-xs font-mono px-1.5 py-px rounded bg-bg-surface border border-border-subtle text-text-tertiary">
+                      <span className="text-[13px] font-mono px-1.5 py-px rounded bg-bg-surface border border-border-subtle text-text-tertiary">
                         {libraryLabels[file.library] || file.library}
                       </span>
                     </td>
                     <td className="px-4 py-2.5">
-                      <div className="text-xs font-mono text-text-secondary">
+                      <div className="text-[13px] font-mono text-text-secondary">
                         {file.transcodeStatus}
                       </div>
-                      <div className="text-xs font-mono text-text-tertiary">
+                      <div className="text-[13px] font-mono text-text-tertiary">
                         {file.healthCheck}
                       </div>
                     </td>
                     <td className="px-4 py-2.5 text-right">
-                      <span className="text-xs font-mono text-text-tertiary">
+                      <span className="text-[13px] font-mono text-text-tertiary">
                         {formatSize(file.size)}
                       </span>
                     </td>
                     <td className="px-4 py-2.5 whitespace-nowrap">
-                      <span className="text-xs font-mono text-text-tertiary">
+                      <span className="text-[13px] font-mono text-text-tertiary">
                         {file.arrivedAt ? formatDate(file.arrivedAt) : "—"}
                       </span>
                     </td>
                     <td className="px-4 py-2.5">
                       <span
-                        className={`text-xs font-mono px-1.5 py-px rounded ${badge.class}`}
+                        className={`text-[13px] font-mono px-1.5 py-px rounded ${badge.class}`}
                       >
                         {badge.label}
                       </span>
                     </td>
                     <td className="px-4 py-2.5 text-right">
                       {file.activeWorker ? (
-                        <span className="text-xs font-mono text-accent animate-pulse">
+                        <span className="text-[13px] font-mono text-accent animate-pulse">
                           Transcoding...
                         </span>
                       ) : (
@@ -263,7 +263,7 @@ function ActionButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-all active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed ${styles[variant]}`}
+      className={`px-2.5 py-1 rounded-md text-[13px] font-medium border transition-all active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed ${styles[variant]}`}
     >
       {label}
     </button>
@@ -276,7 +276,7 @@ function HistoryPanel({ items, loading }: { items: HistoryItem[]; loading: boole
   return (
     <div className="flex flex-col h-full">
       <div className="px-4 py-3 border-b border-border-subtle">
-        <span className="text-xs font-medium uppercase tracking-[1px] text-text-tertiary">
+        <span className="text-[13px] font-medium uppercase tracking-[1px] text-text-tertiary">
           History
         </span>
       </div>
@@ -288,7 +288,7 @@ function HistoryPanel({ items, loading }: { items: HistoryItem[]; loading: boole
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="p-6 text-center text-[13px] text-text-tertiary font-mono font-light">
+          <div className="p-6 text-center text-sm text-text-tertiary font-mono font-light">
             No actions taken yet
           </div>
         ) : (
@@ -300,20 +300,20 @@ function HistoryPanel({ items, loading }: { items: HistoryItem[]; loading: boole
                   key={item.id}
                   className="flex items-center gap-3 px-3 py-2 rounded-md bg-bg-card border border-border-subtle"
                 >
-                  <span className={`text-[11px] font-mono px-1.5 py-px rounded shrink-0 ${badge.class}`}>
+                  <span className={`text-[13px] font-mono px-1.5 py-px rounded shrink-0 ${badge.class}`}>
                     {badge.label}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] text-text-primary truncate">
+                    <div className="text-sm text-text-primary truncate">
                       {item.file_name}
                     </div>
-                    <div className="text-xs text-text-tertiary font-mono">
+                    <div className="text-[13px] text-text-tertiary font-mono">
                       {libraryLabels[item.library] || item.library}
                       {" \u00b7 "}
                       {formatSize(item.size)}
                     </div>
                   </div>
-                  <span className="text-xs font-mono text-text-tertiary shrink-0">
+                  <span className="text-[13px] font-mono text-text-tertiary shrink-0">
                     {formatDate(item.acted_at)}
                   </span>
                 </div>
@@ -410,13 +410,13 @@ export default function TdarrCleanupPage() {
           <h1 className="text-2xl font-semibold tracking-tight">
             Tdarr Cleanup
           </h1>
-          <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
+          <p className="text-sm text-text-secondary font-mono font-light mt-0.5">
             manage completed and errored transcodes
           </p>
         </div>
         {feedback && (
           <div
-            className={`text-xs font-mono px-3 py-1.5 rounded-md border ${
+            className={`text-[13px] font-mono px-3 py-1.5 rounded-md border ${
               feedback.type === "success"
                 ? "bg-green-dim border-green/20 text-green"
                 : "bg-red-dim border-red/20 text-red"

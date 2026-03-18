@@ -19,6 +19,7 @@ interface AlertRow {
   details: string | null;
   fired_at: string;
   resolved_at: string | null;
+  dismissed_at: string | null;
   fingerprint: string;
 }
 
@@ -510,7 +511,7 @@ export function getActiveAlerts(): AlertRow[] {
   const db = getDb();
   return db
     .prepare(
-      `SELECT * FROM alerts WHERE resolved_at IS NULL ORDER BY fired_at DESC`
+      `SELECT * FROM alerts WHERE resolved_at IS NULL AND dismissed_at IS NULL ORDER BY fired_at DESC`
     )
     .all() as AlertRow[];
 }
@@ -518,7 +519,28 @@ export function getActiveAlerts(): AlertRow[] {
 export function getActiveAlertCount(): number {
   const db = getDb();
   const row = db
-    .prepare(`SELECT COUNT(*) as count FROM alerts WHERE resolved_at IS NULL`)
+    .prepare(`SELECT COUNT(*) as count FROM alerts WHERE resolved_at IS NULL AND dismissed_at IS NULL`)
     .get() as { count: number };
   return row.count;
+}
+
+export function dismissAlert(id: number): void {
+  const db = getDb();
+  db.prepare(
+    `UPDATE alerts SET dismissed_at = ? WHERE id = ? AND dismissed_at IS NULL`
+  ).run(new Date().toISOString(), id);
+}
+
+export function dismissAlerts(ids: number[]): void {
+  const db = getDb();
+  const now = new Date().toISOString();
+  const stmt = db.prepare(
+    `UPDATE alerts SET dismissed_at = ? WHERE id = ? AND dismissed_at IS NULL`
+  );
+  const tx = db.transaction(() => {
+    for (const id of ids) {
+      stmt.run(now, id);
+    }
+  });
+  tx();
 }

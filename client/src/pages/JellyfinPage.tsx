@@ -51,7 +51,7 @@ function LibraryCard({
       <div className="px-4 py-3 border-b border-border-subtle flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-text-primary">{library.name}</h3>
-          <span className="text-xs font-mono text-text-tertiary">
+          <span className="text-[13px] font-mono text-text-tertiary">
             {typeLabels[library.type] || library.type}
           </span>
         </div>
@@ -81,7 +81,7 @@ function LibraryCard({
           <span className="text-2xl font-semibold font-mono text-text-primary">
             {library.itemCount.toLocaleString()}
           </span>
-          <span className="text-xs text-text-tertiary font-mono">items</span>
+          <span className="text-[13px] text-text-tertiary font-mono">items</span>
         </div>
 
         {library.recentItems.length > 0 && (
@@ -96,7 +96,7 @@ function LibraryCard({
                   className="flex items-center justify-between gap-2 px-2 py-1.5 rounded bg-bg-card border border-border-subtle"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="text-[13px] text-text-primary truncate">{item.name}</div>
+                    <div className="text-sm text-text-primary truncate">{item.name}</div>
                   </div>
                   <span className="text-[11px] font-mono text-text-tertiary shrink-0">
                     {formatDate(item.dateAdded)}
@@ -178,13 +178,13 @@ export default function JellyfinPage() {
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Jellyfin</h1>
-          <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
+          <p className="text-sm text-text-secondary font-mono font-light mt-0.5">
             library overview and management
           </p>
         </div>
         {feedback && (
           <div
-            className={`text-xs font-mono px-3 py-1.5 rounded-md border ${
+            className={`text-[13px] font-mono px-3 py-1.5 rounded-md border ${
               feedback.type === "success"
                 ? "bg-green-dim border-green/20 text-green"
                 : "bg-red-dim border-red/20 text-red"
@@ -208,7 +208,7 @@ export default function JellyfinPage() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <p className="text-text-tertiary text-sm">No libraries found</p>
-            <p className="text-text-tertiary text-[13px] mt-1 font-mono font-light">
+            <p className="text-text-tertiary text-sm mt-1 font-mono font-light">
               Check Jellyfin connection and API key
             </p>
           </div>

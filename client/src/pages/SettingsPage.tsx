@@ -22,7 +22,7 @@ export default function SettingsPage() {
     <div className="flex h-full">
       {/* Settings nav sidebar */}
       <div className="w-[200px] min-w-[200px] border-r border-border-subtle bg-bg-base p-3 flex flex-col gap-0.5">
-        <div className="text-xs uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-2 pb-2">
+        <div className="text-[13px] uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-2 pb-2">
           Settings
         </div>
         {tabs.map((tab) => (

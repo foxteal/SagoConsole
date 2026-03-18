@@ -72,7 +72,7 @@ function NavItem({
           <NavIcon icon={icon} />
           {label}
           {badge != null && badge > 0 && (
-            <span className={`ml-auto text-xs font-semibold font-mono px-1.5 py-px rounded-lg ${
+            <span className={`ml-auto text-[13px] font-semibold font-mono px-1.5 py-px rounded-lg ${
               badgeVariant === "amber" ? "bg-amber-dim text-amber" : "bg-red-dim text-red"
             }`}>
               {badge}
@@ -130,14 +130,14 @@ export default function Sidebar() {
       <div className="px-5 py-5 pb-4 border-b border-border-subtle flex items-center gap-2.5">
         <img src="/logo.png" alt="SagoConsole" className="w-7 h-7 rounded-md" />
         <div>
-          <div className="font-semibold text-[15px] tracking-wide text-text-primary">SagoConsole</div>
-          <div className="text-xs text-text-tertiary tracking-[1.5px] uppercase mt-px">homelab</div>
+          <div className="font-semibold text-base tracking-wide text-text-primary">SagoConsole</div>
+          <div className="text-[13px] text-text-tertiary tracking-wide font-mono font-light mt-px">v{__APP_VERSION__}</div>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-3 flex flex-col gap-0.5 overflow-y-auto">
-        <div className="text-xs uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-4 pb-1.5">
+        <div className="text-[13px] uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-4 pb-1.5">
           Overview
         </div>
         {overviewItems.map((item) => (
@@ -152,7 +152,7 @@ export default function Sidebar() {
           />
         ))}
 
-        <div className="text-xs uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-4 pb-1.5">
+        <div className="text-[13px] uppercase tracking-[1.5px] text-text-tertiary font-medium px-3 pt-4 pb-1.5">
           Tools
         </div>
         <NavItem to="/romm-sorter" icon="gamepad" label="Romm Sorter" />
@@ -175,7 +175,7 @@ export default function Sidebar() {
       {/* User footer */}
       {user && (
         <div className="px-4 py-3 border-t border-border-subtle flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-bg-card border border-border flex items-center justify-center text-xs font-semibold text-accent">
+          <div className="w-7 h-7 rounded-full bg-bg-card border border-border flex items-center justify-center text-[13px] font-semibold text-accent">
             {user.username.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">

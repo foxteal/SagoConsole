@@ -2,6 +2,16 @@ import Database from "better-sqlite3";
 
 export function createTables(db: Database.Database): void {
   db.exec(`
+    -- Migration: add dismissed_at column to alerts
+    -- SQLite doesn't support ADD COLUMN IF NOT EXISTS, so we check via pragma
+  `);
+
+  const columns = db.prepare("PRAGMA table_info(alerts)").all() as { name: string }[];
+  if (columns.length > 0 && !columns.some((c) => c.name === "dismissed_at")) {
+    db.exec("ALTER TABLE alerts ADD COLUMN dismissed_at TEXT");
+  }
+
+  db.exec(`
     CREATE TABLE IF NOT EXISTS links (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
@@ -27,11 +37,13 @@ export function createTables(db: Database.Database): void {
       details TEXT,
       fired_at TEXT NOT NULL,
       resolved_at TEXT,
+      dismissed_at TEXT,
       fingerprint TEXT UNIQUE
     );
 
     CREATE INDEX IF NOT EXISTS idx_alerts_fired_at ON alerts(fired_at);
     CREATE INDEX IF NOT EXISTS idx_alerts_resolved_at ON alerts(resolved_at);
+    CREATE INDEX IF NOT EXISTS idx_alerts_dismissed_at ON alerts(dismissed_at);
 
     CREATE TABLE IF NOT EXISTS screens (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
