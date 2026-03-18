@@ -52,20 +52,46 @@ function StateBadge({ state }: { state: string }) {
   );
 }
 
+const ACTION_ICONS: Record<string, React.ReactNode> = {
+  start: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="M6 4l15 8-15 8V4z" />
+    </svg>
+  ),
+  stop: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <rect x="5" y="5" width="14" height="14" rx="1.5" />
+    </svg>
+  ),
+  restart: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 4v6h6" />
+      <path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
+    </svg>
+  ),
+  update: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3v12M5 12l7 7 7-7M5 21h14" />
+    </svg>
+  ),
+};
+
 function ActionButton({
-  label,
+  action,
+  title,
   disabled,
   loading,
   variant,
   onClick,
 }: {
-  label: string;
+  action: string;
+  title: string;
   disabled?: boolean;
   loading?: boolean;
   variant: "default" | "danger" | "accent";
   onClick: () => void;
 }) {
-  const base = "px-2 py-0.5 rounded text-xs font-medium border transition-all active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed";
+  const base = "w-7 h-7 flex items-center justify-center rounded border transition-all active:scale-[0.93] disabled:opacity-40 disabled:cursor-not-allowed";
   const variants = {
     default: "bg-bg-card border-border-subtle text-text-secondary hover:border-border hover:text-text-primary",
     danger: "bg-red-dim/50 border-red-dim text-red hover:bg-red-dim",
@@ -77,8 +103,9 @@ function ActionButton({
       className={`${base} ${variants[variant]}`}
       disabled={disabled || loading}
       onClick={onClick}
+      title={title}
     >
-      {loading ? "..." : label}
+      {loading ? <span className="text-xs font-mono">...</span> : ACTION_ICONS[action]}
     </button>
   );
 }
@@ -359,28 +386,32 @@ export default function ContainersPage() {
                                     </span>
                                   )}
                                   <ActionButton
-                                    label="Start"
+                                    action="start"
+                                    title="Start"
                                     disabled={isRunning}
                                     loading={loadingAction === "start"}
                                     variant="default"
                                     onClick={() => doAction(server.endpointId, c.id, "start")}
                                   />
                                   <ActionButton
-                                    label="Stop"
+                                    action="stop"
+                                    title="Stop"
                                     disabled={!isRunning}
                                     loading={loadingAction === "stop"}
                                     variant="danger"
                                     onClick={() => doAction(server.endpointId, c.id, "stop")}
                                   />
                                   <ActionButton
-                                    label="Restart"
+                                    action="restart"
+                                    title="Restart"
                                     disabled={!isRunning}
                                     loading={loadingAction === "restart"}
                                     variant="default"
                                     onClick={() => doAction(server.endpointId, c.id, "restart")}
                                   />
                                   <ActionButton
-                                    label="Update"
+                                    action="update"
+                                    title="Update"
                                     loading={loadingAction === "update"}
                                     variant="accent"
                                     onClick={() => doAction(server.endpointId, c.id, "update")}
