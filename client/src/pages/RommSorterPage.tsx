@@ -69,7 +69,7 @@ function DownloadList({
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-3 py-2.5 border-b border-border-subtle">
-        <span className="text-xs font-medium uppercase tracking-[1px] text-text-tertiary">
+        <span className="text-[13px] font-medium uppercase tracking-[1px] text-text-tertiary">
           Downloads
         </span>
         <button
@@ -91,7 +91,7 @@ function DownloadList({
             ))}
           </div>
         ) : romItems.length === 0 && mediaItems.length === 0 ? (
-          <div className="p-6 text-center text-[13px] text-text-tertiary font-mono font-light">
+          <div className="p-6 text-center text-sm text-text-tertiary font-mono font-light">
             No downloads found
           </div>
         ) : (
@@ -103,7 +103,7 @@ function DownloadList({
               <div className="mt-1">
                 <button
                   onClick={() => setShowSplitRar(!showSplitRar)}
-                  className="w-full flex items-center gap-1.5 px-2 py-1.5 text-xs text-text-tertiary hover:text-text-secondary transition-colors"
+                  className="w-full flex items-center gap-1.5 px-2 py-1.5 text-[13px] text-text-tertiary hover:text-text-secondary transition-colors"
                 >
                   <svg
                     width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"
@@ -122,7 +122,7 @@ function DownloadList({
               <div className="mt-1">
                 <button
                   onClick={() => setShowMedia(!showMedia)}
-                  className="w-full flex items-center gap-1.5 px-2 py-1.5 text-xs text-text-tertiary hover:text-text-secondary transition-colors"
+                  className="w-full flex items-center gap-1.5 px-2 py-1.5 text-[13px] text-text-tertiary hover:text-text-secondary transition-colors"
                 >
                   <svg
                     width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"
@@ -155,16 +155,16 @@ function DownloadRow({ item, active, onClick }: { item: DownloadItem; active: bo
       }`}
     >
       <div className="flex-1 min-w-0">
-        <div className={`text-[13px] truncate ${active ? "text-accent" : "text-text-primary"}`}>
+        <div className={`text-sm truncate ${active ? "text-accent" : "text-text-primary"}`}>
           {item.name}
         </div>
-        <div className="text-xs text-text-tertiary font-mono">{formatSize(item.size)}</div>
+        <div className="text-[13px] text-text-tertiary font-mono">{formatSize(item.size)}</div>
       </div>
-      <span className="text-xs font-mono px-1.5 py-px rounded bg-bg-surface border border-border-subtle text-text-tertiary shrink-0">
+      <span className="text-[13px] font-mono px-1.5 py-px rounded bg-bg-surface border border-border-subtle text-text-tertiary shrink-0">
         {item.type === "split-rar" ? "split-rar" : item.type}
       </span>
       {item.processed && (
-        <span className="text-xs font-mono px-1.5 py-px rounded bg-green-dim text-green shrink-0">
+        <span className="text-[13px] font-mono px-1.5 py-px rounded bg-green-dim text-green shrink-0">
           {item.processed_platforms.join(", ")}
         </span>
       )}
@@ -263,7 +263,7 @@ function InspectPanel({
       <div className="flex items-center justify-center h-full text-center p-6">
         <div>
           <p className="text-text-tertiary text-sm">Select a download to inspect</p>
-          <p className="text-text-tertiary text-[13px] mt-1 font-mono font-light">Click an item from the downloads list</p>
+          <p className="text-text-tertiary text-sm mt-1 font-mono font-light">Click an item from the downloads list</p>
         </div>
       </div>
     );
@@ -281,9 +281,9 @@ function InspectPanel({
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="px-3 py-2.5 border-b border-border-subtle">
-        <div className="text-[13px] font-semibold text-text-primary truncate">{item?.name || selectedPath}</div>
+        <div className="text-sm font-semibold text-text-primary truncate">{item?.name || selectedPath}</div>
         {item && (
-          <div className="text-xs text-text-tertiary font-mono mt-0.5">
+          <div className="text-[13px] text-text-tertiary font-mono mt-0.5">
             {item.type} &middot; {formatSize(item.size)}
           </div>
         )}
@@ -291,7 +291,7 @@ function InspectPanel({
 
       {/* Platform selector */}
       <div className="px-3 py-2 border-b border-border-subtle">
-        <label className="text-xs uppercase tracking-[1px] text-text-tertiary font-medium block mb-1">
+        <label className="text-[13px] uppercase tracking-[1px] text-text-tertiary font-medium block mb-1">
           Platform
         </label>
         <select
@@ -317,7 +317,7 @@ function InspectPanel({
             ))}
           </div>
         ) : sorted.length === 0 ? (
-          <div className="p-6 text-center text-[13px] text-text-tertiary font-mono font-light">No files found</div>
+          <div className="p-6 text-center text-sm text-text-tertiary font-mono font-light">No files found</div>
         ) : (
           sorted.map((f) => (
             <div
@@ -331,10 +331,10 @@ function InspectPanel({
                 className="shrink-0 accent-accent"
               />
               <div className="flex-1 min-w-0">
-                <div className={`text-[13px] truncate ${f.is_rom ? "text-accent" : "text-text-primary"}`}>
+                <div className={`text-sm truncate ${f.is_rom ? "text-accent" : "text-text-primary"}`}>
                   {f.name}
                 </div>
-                <div className="text-xs text-text-tertiary font-mono">
+                <div className="text-[13px] text-text-tertiary font-mono">
                   {formatSize(f.size)}
                   {f.platform_hints?.length > 0 && !f.is_rom && !f.is_junk && (
                     <> &middot; matches: {f.platform_hints.join(", ")}</>
@@ -342,13 +342,13 @@ function InspectPanel({
                 </div>
               </div>
               {f.is_rom && (
-                <span className="text-xs font-mono px-1.5 py-px rounded bg-accent-glow text-accent shrink-0">ROM</span>
+                <span className="text-[13px] font-mono px-1.5 py-px rounded bg-accent-glow text-accent shrink-0">ROM</span>
               )}
               {f.is_junk && (
-                <span className="text-xs font-mono px-1.5 py-px rounded bg-bg-surface text-text-tertiary shrink-0">junk</span>
+                <span className="text-[13px] font-mono px-1.5 py-px rounded bg-bg-surface text-text-tertiary shrink-0">junk</span>
               )}
               {f.is_ambiguous && !f.is_rom && !f.is_junk && (
-                <span className="text-xs font-mono px-1.5 py-px rounded bg-amber-dim text-amber shrink-0">ambiguous</span>
+                <span className="text-[13px] font-mono px-1.5 py-px rounded bg-amber-dim text-amber shrink-0">ambiguous</span>
               )}
             </div>
           ))
@@ -361,7 +361,7 @@ function InspectPanel({
           <button
             onClick={onProcess}
             disabled={processing || selectedFiles.size === 0}
-            className="w-full px-3 py-2 rounded-lg text-[12px] font-medium bg-accent/10 border border-accent-dim text-accent hover:bg-accent/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.97]"
+            className="w-full px-3 py-2 rounded-lg text-sm font-medium bg-accent/10 border border-accent-dim text-accent hover:bg-accent/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.97]"
           >
             {processing
               ? "Processing..."
@@ -370,7 +370,7 @@ function InspectPanel({
                 : `Process ${selectedFiles.size} file${selectedFiles.size > 1 ? "s" : ""} to ${platforms[platform]?.name || platform}`}
           </button>
           {feedback && (
-            <div className={`mt-1.5 text-xs font-mono ${feedback.type === "success" ? "text-green" : "text-red"}`}>
+            <div className={`mt-1.5 text-[13px] font-mono ${feedback.type === "success" ? "text-green" : "text-red"}`}>
               {feedback.message}
             </div>
           )}
@@ -396,7 +396,7 @@ function HistoryPanel() {
   return (
     <div className="flex flex-col h-full">
       <div className="px-3 py-2.5 border-b border-border-subtle">
-        <span className="text-xs font-medium uppercase tracking-[1px] text-text-tertiary">
+        <span className="text-[13px] font-medium uppercase tracking-[1px] text-text-tertiary">
           History
         </span>
       </div>
@@ -408,13 +408,13 @@ function HistoryPanel() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="p-6 text-center text-[13px] text-text-tertiary font-mono font-light">No history</div>
+          <div className="p-6 text-center text-sm text-text-tertiary font-mono font-light">No history</div>
         ) : (
           <div className="p-1.5 space-y-0.5">
             {items.map((item) => (
               <div key={item.id} className="px-2 py-2 rounded-md bg-bg-card border border-border-subtle">
-                <div className="text-[13px] text-text-primary truncate">{item.source_path}</div>
-                <div className="text-xs text-text-tertiary font-mono mt-0.5 flex items-center gap-1.5">
+                <div className="text-sm text-text-primary truncate">{item.source_path}</div>
+                <div className="text-[13px] text-text-tertiary font-mono mt-0.5 flex items-center gap-1.5">
                   <span>{item.file_count} file{item.file_count > 1 ? "s" : ""}</span>
                   <span>&middot;</span>
                   <span>{item.processed_at ? new Date(item.processed_at).toLocaleDateString() : ""}</span>
@@ -463,7 +463,7 @@ export default function RommSorterPage() {
     <div className="p-6 pb-10 h-full flex flex-col">
       <div className="mb-4">
         <h1 className="text-2xl font-semibold tracking-tight">Romm Sorter</h1>
-        <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
+        <p className="text-sm text-text-secondary font-mono font-light mt-0.5">
           sort downloaded ROMs into the library
         </p>
       </div>

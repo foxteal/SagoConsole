@@ -21,7 +21,7 @@ export default function MetricBar({ label, value, suffix = "%" }: MetricBarProps
           style={{ width: `${Math.min(value, 100)}%` }}
         />
       </div>
-      <span className="font-mono text-[13px] text-text-secondary min-w-[36px] text-right font-light">
+      <span className="font-mono text-sm text-text-secondary min-w-[36px] text-right font-light">
         {Math.round(value)}{suffix}
       </span>
     </div>

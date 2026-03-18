@@ -9,6 +9,7 @@ interface Alert {
   details: string | null;
   fired_at: string;
   resolved_at: string | null;
+  dismissed_at: string | null;
 }
 
 type Filter = "all" | "critical" | "warning" | "resolved";
@@ -34,44 +35,112 @@ const filters: { label: string; value: Filter }[] = [
 export default function AlertsPage() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
+  const [confirmDismissAll, setConfirmDismissAll] = useState(false);
+
+  const fetchAlerts = async () => {
+    try {
+      const res = await apiClient("/api/alerts");
+      if (res.ok) {
+        const data = await res.json();
+        setAlerts(data.alerts);
+      }
+    } catch {
+      // silent
+    }
+  };
 
   useEffect(() => {
-    const fetchAlerts = async () => {
-      try {
-        const res = await apiClient("/api/alerts");
-        if (res.ok) {
-          const data = await res.json();
-          setAlerts(data.alerts);
-        }
-      } catch {
-        // silent
-      }
-    };
-
     fetchAlerts();
     const interval = setInterval(fetchAlerts, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  const activeCount = alerts.filter((a) => !a.resolved_at).length;
+  const activeCount = alerts.filter((a) => !a.resolved_at && !a.dismissed_at).length;
   const resolvedCount = alerts.filter((a) => a.resolved_at).length;
 
-  const filtered = alerts.filter((a) => {
-    if (filter === "all") return true;
-    if (filter === "resolved") return a.resolved_at !== null;
-    if (filter === "critical") return a.severity === "critical" && !a.resolved_at;
-    if (filter === "warning") return a.severity === "warning" && !a.resolved_at;
-    return true;
-  });
+  const filtered = alerts
+    .filter((a) => !a.dismissed_at)
+    .filter((a) => {
+      if (filter === "all") return true;
+      if (filter === "resolved") return a.resolved_at !== null;
+      if (filter === "critical") return a.severity === "critical" && !a.resolved_at;
+      if (filter === "warning") return a.severity === "warning" && !a.resolved_at;
+      return true;
+    });
+
+  const dismissOne = async (id: number) => {
+    try {
+      const res = await apiClient(`/api/alerts/${id}/dismiss`, { method: "POST" });
+      if (res.ok) {
+        setAlerts((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, dismissed_at: new Date().toISOString() } : a))
+        );
+      }
+    } catch {
+      // silent
+    }
+  };
+
+  const dismissFiltered = async () => {
+    const ids = filtered.map((a) => a.id);
+    if (ids.length === 0) return;
+    try {
+      const res = await apiClient("/api/alerts/dismiss", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      if (res.ok) {
+        const now = new Date().toISOString();
+        const idSet = new Set(ids);
+        setAlerts((prev) =>
+          prev.map((a) => (idSet.has(a.id) ? { ...a, dismissed_at: now } : a))
+        );
+      }
+    } catch {
+      // silent
+    }
+    setConfirmDismissAll(false);
+  };
 
   return (
     <div className="p-6 pb-10">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Alerts</h1>
-          <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
+          <p className="text-sm text-text-secondary font-mono font-light mt-0.5">
             {activeCount} active &middot; {resolvedCount} resolved
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {confirmDismissAll ? (
+            <>
+              <span className="text-sm text-text-secondary">
+                Dismiss {filtered.length} alert{filtered.length !== 1 ? "s" : ""}?
+              </span>
+              <button
+                onClick={dismissFiltered}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium bg-accent text-white hover:bg-accent/90 transition-all active:scale-[0.97]"
+              >
+                Confirm
+              </button>
+              <button
+                onClick={() => setConfirmDismissAll(false)}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium border border-border-subtle text-text-secondary hover:text-text-primary hover:border-border transition-all active:scale-[0.97]"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            filtered.length > 0 && (
+              <button
+                onClick={() => setConfirmDismissAll(true)}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium border border-border-subtle text-text-secondary hover:text-text-primary hover:border-border transition-all active:scale-[0.97]"
+              >
+                Dismiss All
+              </button>
+            )
+          )}
         </div>
       </div>
 
@@ -80,8 +149,8 @@ export default function AlertsPage() {
         {filters.map((f) => (
           <button
             key={f.value}
-            onClick={() => setFilter(f.value)}
-            className={`px-3 py-1 rounded-lg text-[13px] font-medium border transition-all active:scale-[0.97] ${
+            onClick={() => { setFilter(f.value); setConfirmDismissAll(false); }}
+            className={`px-3 py-1 rounded-lg text-sm font-medium border transition-all active:scale-[0.97] ${
               filter === f.value
                 ? "bg-accent-glow border-accent-dim text-accent"
                 : "bg-bg-surface border-border-subtle text-text-secondary hover:border-border hover:text-text-primary"
@@ -97,25 +166,26 @@ export default function AlertsPage() {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="w-[30px] text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle" />
-              <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+              <th className="w-[30px] text-left px-3 py-2 text-[13px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle" />
+              <th className="text-left px-3 py-2 text-[13px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                 Source
               </th>
-              <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+              <th className="text-left px-3 py-2 text-[13px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                 Message
               </th>
-              <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+              <th className="text-left px-3 py-2 text-[13px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                 Time
               </th>
-              <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+              <th className="text-left px-3 py-2 text-[13px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                 Status
               </th>
+              <th className="w-[44px] border-b border-border-subtle" />
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-3 py-6 text-center text-[13px] text-text-tertiary font-mono">
+                <td colSpan={6} className="px-3 py-6 text-center text-sm text-text-tertiary font-mono">
                   No alerts match this filter
                 </td>
               </tr>
@@ -132,26 +202,37 @@ export default function AlertsPage() {
                     />
                   </td>
                   <td className="px-3 py-2.5 border-b border-border-subtle">
-                    <span className="font-mono text-xs px-1.5 py-0.5 rounded bg-bg-card border border-border-subtle">
+                    <span className="font-mono text-[13px] px-1.5 py-0.5 rounded bg-bg-card border border-border-subtle">
                       {alert.source}
                     </span>
                   </td>
                   <td className="px-3 py-2.5 border-b border-border-subtle text-sm font-light text-text-primary">
                     {alert.message}
                   </td>
-                  <td className="px-3 py-2.5 border-b border-border-subtle font-mono text-[13px] text-text-secondary font-light whitespace-nowrap">
+                  <td className="px-3 py-2.5 border-b border-border-subtle font-mono text-sm text-text-secondary font-light whitespace-nowrap">
                     {timeAgo(alert.fired_at)}
                   </td>
                   <td className="px-3 py-2.5 border-b border-border-subtle">
                     {alert.resolved_at ? (
-                      <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-lg bg-green-dim text-green">
+                      <span className="text-[13px] font-mono font-medium px-2 py-0.5 rounded-lg bg-green-dim text-green">
                         resolved
                       </span>
                     ) : (
-                      <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-lg bg-red-dim text-red">
+                      <span className="text-[13px] font-mono font-medium px-2 py-0.5 rounded-lg bg-red-dim text-red">
                         active
                       </span>
                     )}
+                  </td>
+                  <td className="px-3 py-2.5 border-b border-border-subtle">
+                    <button
+                      onClick={() => dismissOne(alert.id)}
+                      className="w-7 h-7 flex items-center justify-center rounded-md text-text-tertiary hover:text-text-secondary hover:bg-bg-card transition-colors"
+                      title="Dismiss"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                      </svg>
+                    </button>
                   </td>
                 </tr>
               ))

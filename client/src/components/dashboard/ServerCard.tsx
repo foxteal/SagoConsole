@@ -40,7 +40,7 @@ export default function ServerCard({ server }: { server: ServerData }) {
     <div className="bg-bg-surface border border-border-subtle rounded-lg px-[18px] py-4 transition-all hover:border-border hover:shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
       {/* Header */}
       <div className="flex items-center justify-between mb-3.5">
-        <div className="font-semibold text-[15px] flex items-center gap-2">
+        <div className="font-semibold text-base flex items-center gap-2">
           <span
             className={`w-[7px] h-[7px] rounded-full ${
               server.up
@@ -50,7 +50,7 @@ export default function ServerCard({ server }: { server: ServerData }) {
           />
           {server.name}
         </div>
-        <div className="font-mono text-[13px] text-text-tertiary font-light">
+        <div className="font-mono text-sm text-text-tertiary font-light">
           {server.uptimeSeconds !== null ? formatUptime(server.uptimeSeconds) : "—"}
         </div>
       </div>
@@ -62,10 +62,10 @@ export default function ServerCard({ server }: { server: ServerData }) {
       {/* Temp & Network */}
       <hr className="border-0 border-t border-border-subtle my-2" />
       <div className="flex justify-between py-1">
-        <div className="font-mono text-[13px] text-text-tertiary font-light flex items-center gap-1">
+        <div className="font-mono text-sm text-text-tertiary font-light flex items-center gap-1">
           &#9832; <span className="text-text-secondary">{server.tempCelsius !== null ? `${server.tempCelsius}\u00B0C` : "—"}</span>
         </div>
-        <div className="font-mono text-[13px] text-text-tertiary font-light flex items-center gap-1">
+        <div className="font-mono text-sm text-text-tertiary font-light flex items-center gap-1">
           &#8593;<span className="text-text-secondary">{server.networkTxBytesPerSec !== null ? formatNetRate(server.networkTxBytesPerSec) : "—"}</span>
           {" "}&#8595;<span className="text-text-secondary">{server.networkRxBytesPerSec !== null ? formatNetRate(server.networkRxBytesPerSec) : "—"}</span>
         </div>

@@ -46,7 +46,7 @@ const STATE_COLORS: Record<string, { bg: string; text: string }> = {
 function StateBadge({ state }: { state: string }) {
   const colors = STATE_COLORS[state] || { bg: "bg-bg-card", text: "text-text-secondary" };
   return (
-    <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded-lg ${colors.bg} ${colors.text}`}>
+    <span className={`text-[13px] font-mono font-medium px-2 py-0.5 rounded-lg ${colors.bg} ${colors.text}`}>
       {state}
     </span>
   );
@@ -106,7 +106,7 @@ function ActionButton({
       onClick={onClick}
       title={title}
     >
-      {loading ? <span className="text-xs font-mono">...</span> : ACTION_ICONS[action]}
+      {loading ? <span className="text-[13px] font-mono">...</span> : ACTION_ICONS[action]}
     </button>
   );
 }
@@ -253,14 +253,14 @@ export default function ContainersPage() {
     { label: "Stopped", value: "stopped" },
   ];
 
-  const thClass = "text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle cursor-pointer select-none hover:text-text-secondary transition-colors";
+  const thClass = "text-left px-3 py-2 text-[13px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle cursor-pointer select-none hover:text-text-secondary transition-colors";
 
   return (
     <div className="p-6 pb-10">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Containers</h1>
-          <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
+          <p className="text-sm text-text-secondary font-mono font-light mt-0.5">
             {totalRunning} running &middot; {totalContainers} total
           </p>
         </div>
@@ -280,7 +280,7 @@ export default function ContainersPage() {
             <button
               key={f.value}
               onClick={() => setStateFilter(f.value)}
-              className={`px-3 py-1 rounded-lg text-[13px] font-medium border transition-all active:scale-[0.97] ${
+              className={`px-3 py-1 rounded-lg text-sm font-medium border transition-all active:scale-[0.97] ${
                 stateFilter === f.value
                   ? "bg-accent-glow border-accent-dim text-accent"
                   : "bg-bg-surface border-border-subtle text-text-secondary hover:border-border hover:text-text-primary"
@@ -293,7 +293,7 @@ export default function ContainersPage() {
       </div>
 
       {loading ? (
-        <p className="text-[13px] text-text-tertiary font-mono font-light">Loading containers...</p>
+        <p className="text-sm text-text-tertiary font-mono font-light">Loading containers...</p>
       ) : (
         <div className="flex flex-col gap-4">
           {filteredServers.map((server) => {
@@ -310,7 +310,7 @@ export default function ContainersPage() {
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-semibold text-text-primary">{server.server}</span>
-                    <span className="text-xs font-mono text-text-tertiary font-light">
+                    <span className="text-[13px] font-mono text-text-tertiary font-light">
                       {server.running}/{server.total} running
                     </span>
                   </div>
@@ -333,7 +333,7 @@ export default function ContainersPage() {
                   <table className="w-full border-collapse">
                     <thead>
                       <tr>
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
+                        <th className="text-left px-3 py-2 text-[13px] uppercase tracking-[1px] text-text-tertiary font-medium border-b border-border-subtle">
                           Actions
                         </th>
                         <th className={thClass} onClick={() => toggleSort(server.server, "name")}>
@@ -353,7 +353,7 @@ export default function ContainersPage() {
                     <tbody>
                       {server.containers.length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="px-3 py-6 text-center text-[13px] text-text-tertiary font-mono">
+                          <td colSpan={5} className="px-3 py-6 text-center text-sm text-text-tertiary font-mono">
                             No containers
                           </td>
                         </tr>
@@ -369,7 +369,7 @@ export default function ContainersPage() {
                               <td className="px-3 py-2 border-b border-border-subtle">
                                 <div className="flex items-center gap-1.5">
                                   {feedback && (
-                                    <span className={`text-xs font-mono mr-1 ${feedback.ok ? "text-green" : "text-red"}`}>
+                                    <span className={`text-[13px] font-mono mr-1 ${feedback.ok ? "text-green" : "text-red"}`}>
                                       {feedback.msg}
                                     </span>
                                   )}
@@ -407,18 +407,18 @@ export default function ContainersPage() {
                                 </div>
                               </td>
                               <td className="px-3 py-2 border-b border-border-subtle">
-                                <span className="font-mono text-[13px] text-text-primary font-light">{c.name}</span>
+                                <span className="font-mono text-sm text-text-primary font-light">{c.name}</span>
                               </td>
                               <td className="px-3 py-2 border-b border-border-subtle">
                                 <StateBadge state={c.state} />
                               </td>
                               <td className="px-3 py-2 border-b border-border-subtle hidden lg:table-cell">
-                                <span className="font-mono text-[13px] text-text-tertiary font-light truncate block max-w-[300px]" title={c.image}>
+                                <span className="font-mono text-sm text-text-tertiary font-light truncate block max-w-[300px]" title={c.image}>
                                   {c.image}
                                 </span>
                               </td>
                               <td className="px-3 py-2 border-b border-border-subtle hidden md:table-cell">
-                                <span className="text-[13px] text-text-secondary font-light">{c.status}</span>
+                                <span className="text-sm text-text-secondary font-light">{c.status}</span>
                               </td>
                             </tr>
                           );

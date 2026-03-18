@@ -40,7 +40,7 @@ export default function ServicesPage() {
     <div className="p-6 pb-10">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight">Services</h1>
-        <p className="text-[13px] text-text-secondary font-mono font-light mt-0.5">
+        <p className="text-sm text-text-secondary font-mono font-light mt-0.5">
           {totalLinks} services across {categories.length} categories
         </p>
       </div>

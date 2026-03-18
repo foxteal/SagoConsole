@@ -21,14 +21,14 @@ function formatSize(bytes: number): string {
 export default function DriveBar({ label, usedBytes, totalBytes, usedPercent }: DriveBarProps) {
   return (
     <div className="flex items-center justify-between py-[3px]">
-      <span className="text-xs text-text-tertiary min-w-[85px] font-mono font-light">{label}</span>
+      <span className="text-[13px] text-text-tertiary min-w-[85px] font-mono font-light">{label}</span>
       <div className="flex-1 mx-2 h-[3px] bg-bg-card rounded-sm overflow-hidden">
         <div
           className={`h-full rounded-sm ${barColor(usedPercent)}`}
           style={{ width: `${Math.min(usedPercent, 100)}%` }}
         />
       </div>
-      <span className="text-xs text-text-tertiary font-mono min-w-[48px] text-right font-light">
+      <span className="text-[13px] text-text-tertiary font-mono min-w-[48px] text-right font-light">
         {formatSize(usedBytes)}/{formatSize(totalBytes)}
       </span>
     </div>
